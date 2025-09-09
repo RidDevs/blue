@@ -1,0 +1,127 @@
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --accent: #0f172a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  background: var(--bg);
+}
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  padding: 12px 18px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.main-grid {
+  display: flex;
+  flex: 1;
+}
+
+.panel.left {
+  width: 340px;
+  padding: 16px;
+  background: var(--bg);
+  overflow-y: auto;
+  border-right: 1px solid #e5e7eb;
+}
+
+.panel.right {
+  flex: 1;
+  position: relative;
+}
+
+.map {
+  height: 100%;
+  width: 100%;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+.area-input {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+input[type='number'],
+select {
+  padding: 8px;
+  font-size: 14px;
+}
+
+input[type='number'] {
+  flex: 1;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+button {
+  padding: 8px 10px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #1e40af;
+}
+
+.result {
+  margin-top: 16px;
+  background: var(--panel);
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.verdict {
+  margin-top: 8px;
+  font-weight: bold;
+}
+
+footer {
+  padding: 8px 12px;
+  background: #eef2ff;
+  font-size: 13px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+/* Fix leaflet icons with Vite */
+.leaflet-container .leaflet-control-attribution {
+  font-size: 11px;
+}
+
+.leaflet-pane img {
+  image-rendering: -webkit-optimize-contrast;
+}
