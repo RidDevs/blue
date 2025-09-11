@@ -1,42 +1,104 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* Root layout */
+.app-root {
+  font-family: Arial, sans-serif;
+  color: #222;
+  background: #f7f9fb;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+header {
+  background: #1e3a8a;
+  color: white;
+  padding: 12px 20px;
   text-align: center;
+  font-size: 20px;
+  font-weight: bold;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Main grid */
+.main-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr;
+  flex: 1;
+  overflow: hidden;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Left panel */
+.panel.left {
+  background: white;
+  border-right: 1px solid #ddd;
+  padding: 16px;
+  overflow-y: auto;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Right panel (map) */
+.panel.right {
+  position: relative;
+}
+.map {
+  width: 100%;
+  height: 100%;
 }
 
-.card {
-  padding: 2em;
+/* Section headings */
+.panel.left h3 {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #1e3a8a;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
 }
 
-.read-the-docs {
-  color: #888;
+/* Buttons */
+button {
+  padding: 8px 12px;
+  margin: 6px 4px 0 0;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  background: #1e3a8a;
+  color: white;
+  font-size: 14px;
+  transition: 0.2s;
+}
+button:hover {
+  background: #334fb8;
+}
+
+/* Inputs */
+.area-input {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+.area-input input,
+.area-input select {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  flex: 1;
+}
+
+/* Captured image */
+.panel.left img {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+/* Result box */
+.result {
+  margin-top: 16px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f1f5f9;
+  font-size: 14px;
+}
+.verdict {
+  margin-top: 8px;
+  font-weight: bold;
 }
