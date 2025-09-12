@@ -134,16 +134,56 @@ export default function App() {
 
   // --- Satellite capture ---
   function captureMapView() {
-    const { map } = mapRef.current;
-    leafletImage(map, (err, canvas) => {
-      if (err) {
-        alert("Map capture failed: " + err.message);
-        return;
+  const { map } = mapRef.current;
+  leafletImage(map, (err, canvas) => {
+    if (err) {
+      alert("Map capture failed: " + err.message);
+      return;
+    }
+
+    // Convert Leaflet polygon(s) to pixel coordinates
+    const polygonLayers = [];
+    drawnItemsRef.current.eachLayer((layer) => {
+      if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
+        const latlngs = layer.getLatLngs()[0]; // outer ring
+        const coords = latlngs.map((latlng) =>
+          map.latLngToContainerPoint(latlng)
+        );
+        polygonLayers.push(coords);
       }
-      const imgData = canvas.toDataURL("image/png");
-      setSatImg(imgData);
     });
-  }
+
+    // If no polygon drawn, fallback to full snapshot
+    if (polygonLayers.length === 0) {
+      setSatImg(canvas.toDataURL("image/png"));
+      return;
+    }
+
+    // Create masked canvas
+    const maskedCanvas = document.createElement("canvas");
+    maskedCanvas.width = canvas.width;
+    maskedCanvas.height = canvas.height;
+    const ctx = maskedCanvas.getContext("2d");
+
+    // Draw map snapshot first
+    ctx.drawImage(canvas, 0, 0);
+
+    // Clip polygon
+    ctx.globalCompositeOperation = "destination-in";
+    ctx.beginPath();
+    polygonLayers.forEach((coords) => {
+      ctx.moveTo(coords[0].x, coords[0].y);
+      coords.forEach((pt) => ctx.lineTo(pt.x, pt.y));
+      ctx.closePath();
+    });
+    ctx.fill();
+
+    // Save result
+    const imgData = maskedCanvas.toDataURL("image/png");
+    setSatImg(imgData);
+  });
+}
+
 
   // --- Map & Area Helpers ---
   function computeAndCompareArea(layer) {
