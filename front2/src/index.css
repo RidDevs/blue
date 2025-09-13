@@ -1,68 +1,106 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* 🌊 BlueCarbon Registry Minimalist Styles */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+/* Root container */
+#root {
+  margin: 0 auto;
+  padding: 0; /* remove unnecessary padding */
+  text-align: center;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to bottom right, #0f172a, #065f46); /* blue-green gradient */
   min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* Card styling for login box */
+.card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  width: 380px;
+  max-width: 90%;
+  transition: transform 0.2s ease-in-out;
 }
 
+.card:hover {
+  transform: translateY(-5px);
+}
+
+/* Input fields */
+input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.2s ease-in-out;
+}
+
+input:focus {
+  border-color: #2563eb; /* blue highlight */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Role buttons */
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  border: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.role-btn {
+  flex: 1;
+  margin: 0 0.25rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #f3f4f6;
+}
+
+.role-btn:hover {
+  background: #e5e7eb;
+}
+
+.role-btn.active.farmer {
+  background: #16a34a;
+  color: white;
+}
+
+.role-btn.active.buyer {
+  background: #2563eb;
+  color: white;
+}
+
+.role-btn.active.admin {
+  background: #dc2626;
+  color: white;
+}
+
+/* Login button */
+.login-btn {
+  width: 100%;
+  background: #1d4ed8;
+  color: white;
+  padding: 0.9rem;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.login-btn:hover {
+  background: #1e40af;
+}
+
+/* Dashboard headers */
+.dashboard {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
 }
