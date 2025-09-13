@@ -1,18 +1,30 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../index.css"; // import CSS file
+import "../index.css";
 
-export default function Login() {
+export default function SignUp() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
+  const handleSignUp = () => {
     if (!role) {
       alert("Please select a role!");
       return;
     }
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+    if (!name || !email || !password) {
+      alert("Please fill all fields!");
+      return;
+    }
+    // Here you would typically handle the signup logic
+    alert("Account created successfully!");
     navigate(`/${role}`);
   };
 
@@ -22,12 +34,14 @@ export default function Login() {
         {/* Profile Icon */}
         <div className="profile-icon">👨🏻‍💼</div>
 
-        <h2 className="login-title">Login as</h2>
+        <h2 className="login-title">Create Account</h2>
 
         <input
           type="text"
-          placeholder="Name"
+          placeholder="Full Name"
           className="login-input"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
 
         <input
@@ -44,6 +58,14 @@ export default function Login() {
           className="login-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          className="login-input"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
 
         {/* Role Selection */}
@@ -68,12 +90,12 @@ export default function Login() {
           </button>
         </div>
 
-        <button onClick={handleLogin} className="login-btn">
-          LOGIN
+        <button onClick={handleSignUp} className="login-btn">
+          CREATE ACCOUNT
         </button>
 
         <div className="auth-link">
-          Don't have an account? <Link to="/signup">Sign Up</Link>
+          Already have an account? <Link to="/login">Sign In</Link>
         </div>
       </div>
     </div>

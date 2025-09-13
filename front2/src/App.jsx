@@ -1,41 +1,43 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Login from "./pages/Login";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import Navbar from "./pages/navbar.jsx";
+import Home from "./pages/home.jsx";
+import Login from "./pages/Login.jsx";
+import SignUp from "./pages/SignUp.jsx";
 
-// Simple placeholder dashboards (you can style them later)
-function FarmerDashboard() {
-  return (
-    <div className="h-screen flex items-center justify-center bg-green-100">
-      <h1 className="text-3xl font-bold">🌾 Farmer Dashboard</h1>
-    </div>
-  );
-}
+function AppContent() {
+  const location = useLocation();
+  const hideNavbar = location.pathname === '/login' || location.pathname === '/' || location.pathname === '/signup';
 
-function BuyerDashboard() {
   return (
-    <div className="h-screen flex items-center justify-center bg-blue-100">
-      <h1 className="text-3xl font-bold">🛒 Buyer Dashboard</h1>
-    </div>
-  );
-}
+    <>
+      {!hideNavbar && <Navbar />}
+      <Routes>
+        {/* Default page - Login */}
+        <Route path="/" element={<Login />} />
+        
+        {/* Home page */}
+        <Route path="/home" element={<Home />} />
 
-function AdminDashboard() {
-  return (
-    <div className="h-screen flex items-center justify-center bg-red-100">
-      <h1 className="text-3xl font-bold">🛡️ Admin Dashboard</h1>
-    </div>
+        {/* Login page */}
+        <Route path="/login" element={<Login />} />
+        
+        {/* SignUp page */}
+        <Route path="/signup" element={<SignUp />} />
+
+        {/* Dashboards after login */}
+        <Route path="/farmer" element={<h1>Farmer Dashboard</h1>} />
+        <Route path="/buyer" element={<h1>Buyer Dashboard</h1>} />
+        <Route path="/admin" element={<h1>Admin Dashboard</h1>} />
+      </Routes>
+    </>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/farmer" element={<FarmerDashboard />} />
-        <Route path="/buyer" element={<BuyerDashboard />} />
-        <Route path="/admin" element={<AdminDashboard />} />
-      </Routes>
-    </BrowserRouter>
+    <Router>
+      <AppContent />
+    </Router>
   );
 }
 
