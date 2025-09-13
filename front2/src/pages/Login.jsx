@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import "../index.css"; // import CSS file
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -16,60 +17,59 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gradient-to-br from-blue-900 to-green-600">
-      <div className="bg-white p-8 rounded-2xl shadow-2xl w-96">
-        <h1 className="text-2xl font-extrabold text-center mb-6 text-blue-800">
-          🌊 BlueCarbon Registry Login
-        </h1>
+    <div className="login-container">
+      <div className="login-card">
+        {/* Profile Icon */}
+        <div className="profile-icon">👤</div>
+
+        <h2 className="login-title">Login as</h2>
+
+        <input
+          type="text"
+          placeholder="Name"
+          className="login-input"
+        />
 
         <input
           type="email"
-          placeholder="Enter Email"
-          className="w-full p-3 mb-3 border rounded-lg"
+          placeholder="Email ID"
+          className="login-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
           type="password"
-          placeholder="Enter Password"
-          className="w-full p-3 mb-6 border rounded-lg"
+          placeholder="Password"
+          className="login-input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <div className="flex justify-between mb-6">
+        {/* Role Selection */}
+        <div className="role-buttons">
           <button
             onClick={() => setRole("farmer")}
-            className={`px-4 py-2 rounded-lg ${
-              role === "farmer" ? "bg-green-600 text-white" : "bg-gray-200"
-            }`}
+            className={role === "farmer" ? "active" : ""}
           >
             🌾 Farmer
           </button>
           <button
             onClick={() => setRole("buyer")}
-            className={`px-4 py-2 rounded-lg ${
-              role === "buyer" ? "bg-blue-600 text-white" : "bg-gray-200"
-            }`}
+            className={role === "buyer" ? "active" : ""}
           >
             🛒 Buyer
           </button>
           <button
             onClick={() => setRole("admin")}
-            className={`px-4 py-2 rounded-lg ${
-              role === "admin" ? "bg-red-600 text-white" : "bg-gray-200"
-            }`}
+            className={role === "admin" ? "active" : ""}
           >
             🛡️ Admin
           </button>
         </div>
 
-        <button
-          onClick={handleLogin}
-          className="w-full bg-blue-700 hover:bg-blue-900 text-white py-3 rounded-lg font-bold"
-        >
-          Login
+        <button onClick={handleLogin} className="login-btn">
+          LOGIN
         </button>
       </div>
     </div>
