@@ -21,7 +21,7 @@ export default function Login() {
     const userProfile = localStorage.getItem('userProfile');
     if (!userProfile) {
       // If no profile exists, redirect to profile form
-      navigate('/profile');
+      navigate('/profile-form');
     } else {
       // If profile exists, go to role-specific home
       navigate(`/${role}`);

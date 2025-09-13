@@ -6,9 +6,13 @@ import FarmerHome from "./pages/FarmerHome.jsx";
 import BuyerHome from "./pages/BuyerHome.jsx";
 import AdminHome from "./pages/AdminHome.jsx";
 import Profile from "./pages/Profile.jsx";
+import ProfileDisplay from "./pages/ProfileDisplay.jsx";
 import AddProject from "./pages/AddProject.jsx";
-import MRVDashboard from "./pages/MRVDashboard.jsx";
+import MRVDashboard from "./pages/MRVDashboardfarmer.jsx";
+import MRVDashboardBuyer from "./pages/MRVDashboardbuyer.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
+import About from "./pages/About.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -32,13 +36,22 @@ function AppContent() {
         <Route path="/buyer" element={<BuyerHome />} />
         <Route path="/admin" element={<AdminHome />} />
         
-        {/* Profile page */}
-        <Route path="/profile" element={<Profile />} />
+        {/* Profile pages */}
+        <Route path="/profile" element={<ProfileDisplay />} />
+        <Route path="/profile-form" element={<Profile />} />
+        <Route path="/profile-display" element={<ProfileDisplay />} />
         
         {/* Farmer-specific pages */}
         <Route path="/add-project" element={<AddProject />} />
         <Route path="/mrv-dashboard" element={<MRVDashboard />} />
         <Route path="/marketplace" element={<Marketplace />} />
+        
+        {/* Buyer-specific pages */}
+        <Route path="/mrv-dashboard-buyer" element={<MRVDashboardBuyer />} />
+        
+        {/* General pages */}
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </>
   );

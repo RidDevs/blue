@@ -18,10 +18,10 @@ export default function BuyerHome() {
         </div>
 
         <div className="dashboard-card">
-          <div className="card-icon">📋</div>
-          <h3>My Purchases</h3>
-          <p>View your carbon credit portfolio and certificates</p>
-          <Link to="/my-purchases" className="card-button">View Portfolio</Link>
+          <div className="card-icon">📊</div>
+          <h3>MRV Dashboard</h3>
+          <p>Monitor carbon credit marketplace and your portfolio</p>
+          <Link to="/mrv-dashboard-buyer" className="card-button">View Dashboard</Link>
         </div>
 
         <div className="dashboard-card">
