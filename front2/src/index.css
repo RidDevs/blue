@@ -128,18 +128,17 @@
 /* ===== ROLE-SPECIFIC HOME PAGE STYLES ===== */
 
 .home-container {
-  padding: 2rem;
-  max-width: 1200px;
+  max-width: autofill;
   margin: 0 auto;
-  min-height: calc(100vh - 80px);
+  min-height: 100px;
 }
 
 .hero-section {
   text-align: center;
   margin-bottom: 3rem;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 20px;
+  background: linear-gradient(10deg, #acabab 0%, #8098b4 100%);
+  
   color: white;
 }
 
@@ -359,7 +358,7 @@
 /* ===== BEAUTIFUL NAVBAR STYLES ===== */
 
 .navbar-container {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #555555 100%);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
@@ -386,10 +385,21 @@
 
 /* Logo on the left */
 .navbar-logo {
+  background-image: url("./assets/logo1.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 200px;
+  height: 60px;
   display: flex;
   align-items: center;
   gap: 1rem;
   cursor: pointer;
+
+  /* Boundary styles */
+  border: 2px solid #ffffff; /* White border */
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 /* Right side container */
@@ -414,7 +424,7 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(17, 17, 17, 0.9);
   text-decoration: none;
   font-weight: 500;
   padding: 0.5rem 0.75rem;
@@ -454,36 +464,18 @@
 
 /* Remove duplicate logo section since it's already defined above */
 
-.logo-icon {
-  position: relative;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #00c6ff, #0072ff);
+.logo-image {
+  width: 120px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: contain;
   box-shadow: 0 4px 15px rgba(0, 114, 255, 0.4);
   transition: all 0.3s ease;
 }
 
-.logo-icon:hover {
-  transform: rotate(360deg) scale(1.1);
+.logo-image:hover {
+  transform: scale(1.05);
   box-shadow: 0 6px 20px rgba(0, 114, 255, 0.6);
-}
-
-.logo-gradient {
-  position: absolute;
-  inset: 2px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #667eea, #764ba2);
-}
-
-.logo-symbol {
-  position: relative;
-  z-index: 1;
-  font-size: 1.5rem;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .logo-text {
@@ -703,5 +695,205 @@
   
   .logo-text {
     font-size: 0.9rem;
+  }
+}
+.footer {
+  margin-top: 4rem;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px 12px 0 0;
+}
+
+.footer p {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  opacity: 0.8;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.footer-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: #413401;
+}
+
+/* Full Screen Hero Section */
+.hero-fullscreen {
+  min-height: 72vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+
+.hero-fullscreen .hero-title {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-fullscreen .hero-subtitle {
+  font-size: 1.5rem;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+/* ===== PROFILE PAGE STYLES ===== */
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+}
+
+.profile-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.profile-title {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.profile-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.profile-form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-section {
+  margin-bottom: 2.5rem;
+}
+
+.form-section h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.file-input {
+  padding: 0.5rem !important;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #666;
+  border: 2px solid #e1e5e9;
+  padding: 0.75rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .profile-container {
+    padding: 1rem;
+  }
+  
+  .profile-form {
+    padding: 1.5rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
   }
 }

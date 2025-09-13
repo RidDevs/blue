@@ -16,7 +16,16 @@ export default function Login() {
     // Store user role in localStorage
     localStorage.setItem('userRole', role);
     localStorage.setItem('userEmail', email);
-    navigate(`/${role}`);
+    
+    // Check if user profile is complete
+    const userProfile = localStorage.getItem('userProfile');
+    if (!userProfile) {
+      // If no profile exists, redirect to profile form
+      navigate('/profile');
+    } else {
+      // If profile exists, go to role-specific home
+      navigate(`/${role}`);
+    }
   };
 
   return (

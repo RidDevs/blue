@@ -4,7 +4,7 @@ import "../index.css";
 export default function BuyerHome() {
   return (
     <div className="home-container">
-      <div className="hero-section">
+      <div className="hero-section hero-fullscreen">
         <h1 className="hero-title">🛒 Welcome, Buyer!</h1>
         <p className="hero-subtitle">Discover and purchase verified blue carbon credits</p>
       </div>

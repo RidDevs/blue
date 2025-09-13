@@ -3,13 +3,8 @@ import { Link, useLocation } from "react-router-dom";
 export default function Navbar() {
   const location = useLocation();
   
-  // Check if user is logged in (on dashboard pages)
-  const isLoggedIn = location.pathname.includes('/farmer') || 
-                     location.pathname.includes('/buyer') || 
-                     location.pathname.includes('/admin') ||
-                     location.pathname === '/mrv-dashboard' ||
-                     location.pathname === '/marketplace' ||
-                     location.pathname === '/add-project';
+  // Check if user is logged in (check localStorage for userRole)
+  const isLoggedIn = localStorage.getItem('userRole') !== null;
 
   // Determine home route based on stored user role
   const getHomeRoute = () => {
@@ -34,18 +29,13 @@ export default function Navbar() {
         
         {/* Left side - Logo */}
         <div className="navbar-logo">
-          <div className="logo-icon">
-            <div className="logo-gradient"></div>
-            <span className="logo-symbol">🌊</span>
-          </div>
-          <h1 className="logo-text">Carbonlens</h1>
         </div>
 
         {/* Right side - Navigation and Buttons */}
         <div className="navbar-right">
           <div className="navbar-nav">
             <Link to={getHomeRoute()} className="nav-link">
-              <span className="nav-icon">🏠</span>
+              <span className="nav-icon">🏠︎</span>
               Home
             </Link>
             <Link to="/mrv-dashboard" className="nav-link">
@@ -53,12 +43,16 @@ export default function Navbar() {
               MRV Dashboard
             </Link>
             <Link to="/marketplace" className="nav-link">
-              <span className="nav-icon">🛒</span>
+              <span className="nav-icon">💰</span>
               Market Place
             </Link>
             <Link to="/add-project" className="nav-link">
               <span className="nav-icon">➕</span>
               Add Project
+            </Link>
+            <Link to="/profile" className="nav-link">
+              <span className="nav-icon">👤</span>
+              Profile
             </Link>
           </div>
           

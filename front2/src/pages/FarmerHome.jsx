@@ -1,12 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router-dom"; 
 import "../index.css";
 
 export default function FarmerHome() {
   return (
     <div className="home-container">
-      <div className="hero-section">
-        <h1 className="hero-title">🌾 Welcome, Farmer!</h1>
-        <p className="hero-subtitle">Manage your blue carbon projects and track environmental impact</p>
+      <div className="hero-section hero-fullscreen">
+        <h1 className="hero-title">🌾Protecting Blue Carbon Ecosystems
+</h1>
+        <p className="hero-subtitle">Monitor, report, and verify blue carbon projects with transparent blockchain technology and community-driven impact tracking.</p>
       </div>
 
       <div className="dashboard-grid">
@@ -59,6 +60,16 @@ export default function FarmerHome() {
           </div>
         </div>
       </div>
+
+      {/* Footer Section */}
+      <footer className="footer">
+        <p>© {new Date().getFullYear()} BlueCarbon Farmers. All rights reserved.</p>
+        <div className="footer-links">
+          <Link to="/about">About</Link>
+          <Link to="/contact">Contact</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+        </div>
+      </footer>
     </div>
   );
 }

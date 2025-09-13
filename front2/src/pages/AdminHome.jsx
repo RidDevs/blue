@@ -4,7 +4,7 @@ import "../index.css";
 export default function AdminHome() {
   return (
     <div className="home-container">
-      <div className="hero-section">
+      <div className="hero-section hero-fullscreen">
         <h1 className="hero-title">🛡️ Welcome, Admin!</h1>
         <p className="hero-subtitle">Oversee the entire Carbonlens ecosystem and manage platform operations</p>
       </div>

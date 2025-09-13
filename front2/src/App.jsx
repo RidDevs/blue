@@ -5,6 +5,7 @@ import SignUp from "./pages/SignUp.jsx";
 import FarmerHome from "./pages/FarmerHome.jsx";
 import BuyerHome from "./pages/BuyerHome.jsx";
 import AdminHome from "./pages/AdminHome.jsx";
+import Profile from "./pages/Profile.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -27,6 +28,9 @@ function AppContent() {
         <Route path="/farmer" element={<FarmerHome />} />
         <Route path="/buyer" element={<BuyerHome />} />
         <Route path="/admin" element={<AdminHome />} />
+        
+        {/* Profile page */}
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </>
   );
