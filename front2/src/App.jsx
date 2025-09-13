@@ -1,11 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-import Navbar from "./pages/navbar.jsx";
+import NavbarWrapper from "./components/NavbarWrapper.jsx";
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import FarmerHome from "./pages/FarmerHome.jsx";
 import BuyerHome from "./pages/BuyerHome.jsx";
 import AdminHome from "./pages/AdminHome.jsx";
 import Profile from "./pages/Profile.jsx";
+import AddProject from "./pages/AddProject.jsx";
+import MRVDashboard from "./pages/MRVDashboard.jsx";
+import Marketplace from "./pages/Marketplace.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -13,7 +16,7 @@ function AppContent() {
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {!hideNavbar && <NavbarWrapper />}
       <Routes>
         {/* Default page - Login */}
         <Route path="/" element={<Login />} />
@@ -31,6 +34,11 @@ function AppContent() {
         
         {/* Profile page */}
         <Route path="/profile" element={<Profile />} />
+        
+        {/* Farmer-specific pages */}
+        <Route path="/add-project" element={<AddProject />} />
+        <Route path="/mrv-dashboard" element={<MRVDashboard />} />
+        <Route path="/marketplace" element={<Marketplace />} />
       </Routes>
     </>
   );
