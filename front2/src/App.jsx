@@ -1,12 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./pages/navbar.jsx";
-import Home from "./pages/home.jsx";
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
+import FarmerHome from "./pages/FarmerHome.jsx";
+import BuyerHome from "./pages/BuyerHome.jsx";
+import AdminHome from "./pages/AdminHome.jsx";
 
 function AppContent() {
   const location = useLocation();
-  const hideNavbar = location.pathname === '/login' || location.pathname === '/' || location.pathname === '/signup';
+  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/';
 
   return (
     <>
@@ -14,9 +16,6 @@ function AppContent() {
       <Routes>
         {/* Default page - Login */}
         <Route path="/" element={<Login />} />
-        
-        {/* Home page */}
-        <Route path="/home" element={<Home />} />
 
         {/* Login page */}
         <Route path="/login" element={<Login />} />
@@ -24,10 +23,10 @@ function AppContent() {
         {/* SignUp page */}
         <Route path="/signup" element={<SignUp />} />
 
-        {/* Dashboards after login */}
-        <Route path="/farmer" element={<h1>Farmer Dashboard</h1>} />
-        <Route path="/buyer" element={<h1>Buyer Dashboard</h1>} />
-        <Route path="/admin" element={<h1>Admin Dashboard</h1>} />
+        {/* Role-specific home pages */}
+        <Route path="/farmer" element={<FarmerHome />} />
+        <Route path="/buyer" element={<BuyerHome />} />
+        <Route path="/admin" element={<AdminHome />} />
       </Routes>
     </>
   );

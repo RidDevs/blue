@@ -23,6 +23,9 @@ export default function SignUp() {
       alert("Please fill all fields!");
       return;
     }
+    // Store user role in localStorage
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('userEmail', email);
     // Here you would typically handle the signup logic
     alert("Account created successfully!");
     navigate(`/${role}`);

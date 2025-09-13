@@ -13,6 +13,9 @@ export default function Login() {
       alert("Please select a role!");
       return;
     }
+    // Store user role in localStorage
+    localStorage.setItem('userRole', role);
+    localStorage.setItem('userEmail', email);
     navigate(`/${role}`);
   };
 

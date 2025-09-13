@@ -7,10 +7,18 @@ export default function Navbar() {
   const isLoggedIn = location.pathname.includes('/farmer') || 
                      location.pathname.includes('/buyer') || 
                      location.pathname.includes('/admin') ||
-                     location.pathname === '/home' ||
                      location.pathname === '/mrv-dashboard' ||
                      location.pathname === '/marketplace' ||
                      location.pathname === '/add-project';
+
+  // Determine home route based on stored user role
+  const getHomeRoute = () => {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole === 'farmer') return '/farmer';
+    if (userRole === 'buyer') return '/buyer';
+    if (userRole === 'admin') return '/admin';
+    return '/login'; // Default to login if no role stored
+  };
 
   const handleLogout = () => {
     // Clear any stored user data
@@ -36,7 +44,7 @@ export default function Navbar() {
         {/* Right side - Navigation and Buttons */}
         <div className="navbar-right">
           <div className="navbar-nav">
-            <Link to="/" className="nav-link">
+            <Link to={getHomeRoute()} className="nav-link">
               <span className="nav-icon">🏠</span>
               Home
             </Link>
