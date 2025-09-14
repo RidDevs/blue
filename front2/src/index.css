@@ -3239,14 +3239,16 @@ body{
 
 /* Features Section */
 .default-features {
+  background:linear-gradient(135deg, #8f8df8 0%, #813d81 50%, #ed62ff 100%);
   padding: 100px 0;
-  background: white;
+  
 }
 
 .default-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+  
 }
 
 .default-section-title {
