@@ -49,18 +49,18 @@
 
 /* Input fields */
 .login-input {
-  width: 100%;
+  width: 320px;
   padding: 12px;
   margin-bottom: 15px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(to right, #f8bbd0, #e1bee7);
+  background: linear-gradient(to right, #a7e2fa, #5b75e9);
   color: #333;
   font-size: 14px;
 }
 
 .login-input::placeholder {
-  color: #666;
+  color: #181818;
 }
 
 /* Role buttons */
@@ -92,7 +92,7 @@
 .login-btn {
   width: 100%;
   padding: 12px;
-  background: linear-gradient(to right, #ab47bc, #ec407a, #7e57c2);
+  background: linear-gradient(to right, #a7e2fa, #5b75e9, #a7e2fa);
   color: white;
   border: none;
   border-radius: 8px;
