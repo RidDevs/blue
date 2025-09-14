@@ -24,7 +24,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar-container">
+    <nav className="navbar-container navbar-admin">
       <div className="navbar-content">
         
         {/* Left side - Logo */}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DefaultNavbar from "./DefaultNavbar";
 import "../index.css";
 
 export default function ContactUs() {
@@ -43,6 +44,7 @@ export default function ContactUs() {
 
   return (
     <div className="contact-container">
+      <DefaultNavbar />
       <div className="contact-header">
         <h1 className="contact-title">📞 Contact Us</h1>
         <p className="contact-subtitle">Get in touch with our team for support, partnerships, or general inquiries</p>
