@@ -2,8 +2,9 @@
 .login-container {
   height: 100vh;
   display: flex;
-  justify-content: center;
+  justify-content: right;
   align-items: center;
+  padding-right: 70px;
   background: linear-gradient(to bottom, #1a237e, #0d47a1);
   background-image: url("./assets/Frame 6 (5).png"); /* optional plant background */
   background-size: cover;
@@ -2733,7 +2734,7 @@
 
 /* Admin Hero - Purple/Authority Theme */
 .hero-admin {
-  background: linear-gradient(135deg, #4a148c 0%, #6a1b9a 50%, #7b1fa2 100%);
+  background: linear-gradient(0deg, grey , grey);
 }
 
 .hero-admin::before {
