@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../index.css";
+import GreenVerifier from "./GreenVerifier";
+
 
 export default function AddProject() {
   const [projectData, setProjectData] = useState({
@@ -229,14 +231,12 @@ export default function AddProject() {
           </div>
         </div>
 
-        <div className="form-actions">
-          <button type="submit" className="btn-primary">
-            Submit Project
-          </button>
-          <Link to="/farmer" className="btn-secondary">
-            Cancel
-          </Link>
-        </div>
+        <div className="form-section">
+  <h3>Satellite & AI Verification</h3>
+
+  <GreenVerifier/>
+</div>
+
       </form>
     </div>
   );
