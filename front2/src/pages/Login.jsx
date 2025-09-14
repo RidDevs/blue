@@ -1,88 +1,51 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "../index.css"; // import CSS file
+import { auth, db } from "../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
+import "../index.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (!role) {
-      alert("Please select a role!");
-      return;
-    }
-    // Store user role in localStorage
-    localStorage.setItem('userRole', role);
-    localStorage.setItem('userEmail', email);
-    
-    // Check if user profile is complete
-    const userProfile = localStorage.getItem('userProfile');
-    if (!userProfile) {
-      // If no profile exists, redirect to profile form
-      navigate('/profile-form');
-    } else {
-      // If profile exists, go to role-specific home
-      navigate(`/${role}`);
+  const handleLogin = async () => {
+    try {
+      // Sign in user with Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Fetch role from Firestore
+      const userDoc = await getDoc(doc(db, "users", uid));
+      if (userDoc.exists()) {
+        const { role } = userDoc.data();
+        localStorage.setItem("userRole", role);
+        localStorage.setItem("userEmail", email);
+
+        // Redirect based on role
+        navigate(`/${role}`);
+      } else {
+        alert("No role found for this user!");
+      }
+    } catch (error) {
+      alert("Login failed: " + error.message);
     }
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-        {/* Profile Icon */}
         <div className="profile-icon">👨🏻‍💼</div>
+        <h2 className="login-title">Login</h2>
 
-        <h2 className="login-title">Login as</h2>
+        <input type="email" placeholder="Email ID" className="login-input"
+          value={email} onChange={(e) => setEmail(e.target.value)} />
 
-        <input
-          type="text"
-          placeholder="Name"
-          className="login-input"
-        />
+        <input type="password" placeholder="Password" className="login-input"
+          value={password} onChange={(e) => setPassword(e.target.value)} />
 
-        <input
-          type="email"
-          placeholder="Email ID"
-          className="login-input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="login-input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        {/* Role Selection */}
-        <div className="role-buttons">
-          <button
-            onClick={() => setRole("farmer")}
-            className={role === "farmer" ? "active" : ""}
-          >
-            🌾 Farmer
-          </button>
-          <button
-            onClick={() => setRole("buyer")}
-            className={role === "buyer" ? "active" : ""}
-          >
-            🛒 Buyer
-          </button>
-          <button
-            onClick={() => setRole("admin")}
-            className={role === "admin" ? "active" : ""}
-          >
-            🛡️ Admin
-          </button>
-        </div>
-
-        <button onClick={handleLogin} className="login-btn">
-          LOGIN
-        </button>
+        <button onClick={handleLogin} className="login-btn">LOGIN</button>
 
         <div className="auth-link">
           Don't have an account? <Link to="/signup">Sign Up</Link>

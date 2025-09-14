@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { auth, db } from "../firebase";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 import "../index.css";
 
 export default function SignUp() {
@@ -10,7 +13,7 @@ export default function SignUp() {
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!role) {
       alert("Please select a role!");
       return;
@@ -23,79 +26,52 @@ export default function SignUp() {
       alert("Please fill all fields!");
       return;
     }
-    // Store user role in localStorage
-    localStorage.setItem('userRole', role);
-    localStorage.setItem('userEmail', email);
-    // Here you would typically handle the signup logic
-    alert("Account created successfully!");
-    navigate(`/${role}`);
+
+    try {
+      // Create user in Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid;
+
+      // Save extra details in Firestore
+      await setDoc(doc(db, "users", uid), {
+        name,
+        email,
+        role,
+        createdAt: new Date()
+      });
+
+      alert("Account created successfully!");
+      navigate("/login"); // redirect to login
+    } catch (error) {
+      alert("Signup failed: " + error.message);
+    }
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-        {/* Profile Icon */}
         <div className="profile-icon">👨🏻‍💼</div>
-
         <h2 className="login-title">Create Account</h2>
 
-        <input
-          type="text"
-          placeholder="Full Name"
-          className="login-input"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <input type="text" placeholder="Full Name" className="login-input"
+          value={name} onChange={(e) => setName(e.target.value)} />
 
-        <input
-          type="email"
-          placeholder="Email ID"
-          className="login-input"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <input type="email" placeholder="Email ID" className="login-input"
+          value={email} onChange={(e) => setEmail(e.target.value)} />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="login-input"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <input type="password" placeholder="Password" className="login-input"
+          value={password} onChange={(e) => setPassword(e.target.value)} />
 
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          className="login-input"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
+        <input type="password" placeholder="Confirm Password" className="login-input"
+          value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
 
-        {/* Role Selection */}
         <div className="role-buttons">
-          <button
-            onClick={() => setRole("farmer")}
-            className={role === "farmer" ? "active" : ""}
-          >
-            🌾 Farmer
-          </button>
-          <button
-            onClick={() => setRole("buyer")}
-            className={role === "buyer" ? "active" : ""}
-          >
-            🛒 Buyer
-          </button>
-          <button
-            onClick={() => setRole("admin")}
-            className={role === "admin" ? "active" : ""}
-          >
-            🛡️ Admin
-          </button>
+          <button onClick={() => setRole("farmer")} className={role === "farmer" ? "active" : ""}>🌾 Farmer</button>
+          <button onClick={() => setRole("buyer")} className={role === "buyer" ? "active" : ""}>🛒 Buyer</button>
+          <button onClick={() => setRole("admin")} className={role === "admin" ? "active" : ""}>🛡️ Admin</button>
         </div>
 
-        <button onClick={handleSignUp} className="login-btn">
-          CREATE ACCOUNT
-        </button>
+        <button onClick={handleSignUp} className="login-btn">CREATE ACCOUNT</button>
 
         <div className="auth-link">
           Already have an account? <Link to="/login">Sign In</Link>
