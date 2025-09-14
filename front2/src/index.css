@@ -400,9 +400,6 @@ body{
   align-items: center;
   gap: 1rem;
   cursor: pointer;
-
-  /* Boundary styles */
-  border: 2px solid #ffffff; /* White border */
   border-radius: 8px;
   box-sizing: border-box;
 }
@@ -2989,8 +2986,8 @@ body{
 
 /* Default Navbar */
 .navbar-default {
-  background: linear-gradient(135deg, #1a365d 0%, #2d3748 100%);
-  border-bottom: 3px solid #4a5568;
+  background: linear-gradient(135deg, #9ec9fa 0%, #ffadff 100%);
+  border-bottom: 3px solid #000000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
@@ -3005,6 +3002,7 @@ body{
 }
 
 .navbar-default .logo-image {
+  border: 0px;
   height: 40px;
   width: auto;
   border-radius: 8px;
@@ -3019,23 +3017,24 @@ body{
 }
 
 .navbar-default .nav-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(0, 0, 0, 0.9);
   transition: all 0.3s ease;
   border-radius: 8px;
   padding: 10px 16px;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .navbar-default .nav-link:hover {
-  background: rgba(99, 179, 237, 0.2);
-  color: #63b3ed;
+  background: #0077ee(135, 133, 255, 0.699);
+  color: #000000;
   transform: translateY(-2px);
 }
 
 .navbar-default .btn-signin {
   background: transparent;
-  border: 2px solid #63b3ed;
-  color: #63b3ed;
+  
+  border: 2px solid #000000;
+  color: #000000;
   padding: 8px 20px;
   border-radius: 25px;
   font-weight: 600;
@@ -3045,25 +3044,27 @@ body{
 }
 
 .navbar-default .btn-signin:hover {
-  background: #63b3ed;
-  color: white;
+  background: #a3d4f8;
+  color: rgb(0, 0, 0);
   transform: translateY(-2px);
 }
 
 .navbar-default .btn-signup {
   background: linear-gradient(45deg, #4299e1, #63b3ed);
-  border: none;
-  color: white;
+  border: 2px solid #000000;
+  color: rgb(0, 0, 0);
   padding: 10px 24px;
   border-radius: 25px;
+  box-shadow: #ffffff;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.3s ease;
 }
 
 .navbar-default .btn-signup:hover {
-  background: linear-gradient(45deg, #3182ce, #4299e1);
+  background: linear-gradient(45deg, #a5d3fd, #b1dcff);
   transform: translateY(-2px);
+  color: black;
   box-shadow: 0 4px 15px rgba(66, 153, 225, 0.3);
 }
 
@@ -3075,7 +3076,7 @@ body{
 
 /* Default Hero Section */
 .default-hero {
-  background: linear-gradient(135deg, #1a365d 0%, #2c5282 50%, #3182ce 100%);
+  background: linear-gradient(135deg, #8f8df8 0%, #813d81 50%, #ed62ff 100%);
   color: white;
   padding: 100px 0;
   position: relative;
@@ -3115,7 +3116,7 @@ body{
   font-weight: 800;
   margin-bottom: 20px;
   text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-  background: linear-gradient(45deg, #ffffff, #e2e8f0);
+  background: linear-gradient(45deg, #000000, #000000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -3126,7 +3127,7 @@ body{
   margin-bottom: 40px;
   opacity: 0.9;
   line-height: 1.6;
-  color: #cbd5e0;
+  color: #ffffff;
 }
 
 .default-hero-actions {
@@ -3147,15 +3148,16 @@ body{
 }
 
 .default-btn-primary {
-  background: linear-gradient(45deg, #4299e1, #63b3ed);
-  color: white;
-  border: none;
+ 
+  color: rgb(0, 0, 0);
+  background: transparent;
+  border: 2px solid #000000;
 }
 
 .default-btn-primary:hover {
-  background: linear-gradient(45deg, #3182ce, #4299e1);
+  background: linear-gradient(45deg, #ab6ff0, #f268f7);
   transform: translateY(-3px);
-  box-shadow: 0 10px 30px rgba(66, 153, 225, 0.4);
+  box-shadow: 0 10px 30px rgba(255, 22, 255, 0.479);
 }
 
 .default-btn-secondary {
