@@ -15,6 +15,10 @@ import MRVDashboardBuyer from "./pages/MRVDashboardbuyer.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 import About from "./pages/About.jsx";
+import ProjectVerification from "./pages/ProjectVerification.jsx";
+import UserManagement from "./pages/UserManagement.jsx";
+import Transactions from "./pages/Transactions.jsx";
+import Reports from "./pages/Reports.jsx";
 
 function AppContent() {
   const location = useLocation();
@@ -57,6 +61,12 @@ function AppContent() {
         {/* General pages */}
         <Route path="/contact" element={<ContactUs />} />
         <Route path="/about" element={<About />} />
+        
+        {/* Admin/Management pages */}
+        <Route path="/project-verification" element={<ProjectVerification />} />
+        <Route path="/user-management" element={<UserManagement />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/reports" element={<Reports />} />
       </Routes>
     </>
   );
