@@ -8,11 +8,9 @@ export default function BuyerHome() {
         <div className="hero-background"></div>
         <div className="hero-content">
           <div className="hero-badge">🛒 Buyer Portal</div>
-          <h1 className="hero-title">Invest in Climate Impact</h1>
+          <h1 className="hero-title">Invest in Nature. Own Verified Carbon Credits.</h1>
           <p className="hero-subtitle">
-            Purchase premium blue carbon credits from verified coastal restoration projects. 
-            Make a measurable environmental impact while meeting your sustainability goals 
-            through transparent, blockchain-verified transactions.
+          Support Blue Carbon projects in India and track your real climate impact with transparency.
           </p>
           <div className="hero-actions">
             <Link to="/marketplace" className="btn-hero-primary">

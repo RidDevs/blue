@@ -8,11 +8,9 @@ export default function AdminHome() {
         <div className="hero-background"></div>
         <div className="hero-content">
           <div className="hero-badge">🛡️ Admin Portal</div>
-          <h1 className="hero-title">Command Center</h1>
+          <h1 className="hero-title">Oversee. Verify. Maintain Trust. -Admin Heading.</h1>
           <p className="hero-subtitle">
-            Oversee the entire BlueCarbon ecosystem with comprehensive platform management tools. 
-            Monitor transactions, verify projects, and ensure the integrity of the carbon credit 
-            marketplace through advanced analytics and controls.
+          Ensure transparency in Blue Carbon credit issuance and protect the integrity of India’s climate registry.
           </p>
           <div className="hero-actions">
             <Link to="/project-verification" className="btn-hero-primary">
