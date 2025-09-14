@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import NavbarWrapper from "./components/NavbarWrapper.jsx";
+import DefaultLanding from "./pages/DefaultLanding.jsx";
+import DefaultDashboard from "./pages/DefaultDashboard.jsx";
 import Login from "./pages/Login.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import FarmerHome from "./pages/FarmerHome.jsx";
@@ -16,14 +18,17 @@ import About from "./pages/About.jsx";
 
 function AppContent() {
   const location = useLocation();
-  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/';
+  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/' || location.pathname === '/dashboard' || location.pathname === '/about' || location.pathname === '/contact';
 
   return (
     <>
       {!hideNavbar && <NavbarWrapper />}
       <Routes>
-        {/* Default page - Login */}
-        <Route path="/" element={<Login />} />
+        {/* Default landing page */}
+        <Route path="/" element={<DefaultLanding />} />
+
+        {/* Default dashboard for public users */}
+        <Route path="/dashboard" element={<DefaultDashboard />} />
 
         {/* Login page */}
         <Route path="/login" element={<Login />} />

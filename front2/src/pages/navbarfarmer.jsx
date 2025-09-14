@@ -24,11 +24,12 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar-container">
+    <nav className="navbar-container navbar-farmer">
       <div className="navbar-content">
         
         {/* Left side - Logo */}
         <div className="navbar-logo">
+          
         </div>
 
         {/* Right side - Navigation and Buttons */}

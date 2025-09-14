@@ -1,9 +1,11 @@
 import { Link } from "react-router-dom";
+import DefaultNavbar from "./DefaultNavbar";
 import "../index.css";
 
 export default function About() {
   return (
     <div className="about-container">
+      <DefaultNavbar />
       <div className="about-header">
         <h1 className="about-title">🌊 About Blue Carbon Platform</h1>
         <p className="about-subtitle">Protecting coastal ecosystems through transparent carbon credit trading</p>
