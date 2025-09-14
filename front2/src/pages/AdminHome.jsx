@@ -4,9 +4,25 @@ import "../index.css";
 export default function AdminHome() {
   return (
     <div className="home-container">
-      <div className="hero-section hero-fullscreen">
-        <h1 className="hero-title">🛡️ Welcome, Admin!</h1>
-        <p className="hero-subtitle">Oversee the entire Carbonlens ecosystem and manage platform operations</p>
+      <div className="hero-section hero-admin">
+        <div className="hero-background"></div>
+        <div className="hero-content">
+          <div className="hero-badge">🛡️ Admin Portal</div>
+          <h1 className="hero-title">Command Center</h1>
+          <p className="hero-subtitle">
+            Oversee the entire BlueCarbon ecosystem with comprehensive platform management tools. 
+            Monitor transactions, verify projects, and ensure the integrity of the carbon credit 
+            marketplace through advanced analytics and controls.
+          </p>
+          <div className="hero-actions">
+            <Link to="/project-verification" className="btn-hero-primary">
+              Review Projects
+            </Link>
+            <Link to="/platform-analytics" className="btn-hero-secondary">
+              View Analytics
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div className="dashboard-grid">
