@@ -4,10 +4,23 @@ import "../index.css";
 export default function FarmerHome() {
   return (
     <div className="home-container">
-      <div className="hero-section hero-fullscreen">
-        <h1 className="hero-title">🌾Protecting Blue Carbon Ecosystems
-</h1>
-        <p className="hero-subtitle">Monitor, report, and verify blue carbon projects with transparent blockchain technology and community-driven impact tracking.</p>
+      <div className="hero-section hero-farmer">
+        <div className="hero-background"></div>
+        <div className="hero-content">
+          <div className="hero-badge">🌾 Farmer Portal</div>
+          <h1 className="hero-title">Protecting Blue Carbon Ecosystems</h1>
+          <p className="hero-subtitle">
+          Monitor, report, and verify blue carbon projects with transparent blockchain technology and community-driven impact tracking.
+          </p>
+          <div className="hero-actions">
+            <Link to="/add-project" className="btn-hero-primary">
+              Start New Project
+            </Link>
+            <Link to="/mrv-dashboard" className="btn-hero-secondary">
+              View Dashboard
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div className="dashboard-grid">

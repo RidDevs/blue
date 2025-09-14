@@ -4,9 +4,25 @@ import "../index.css";
 export default function BuyerHome() {
   return (
     <div className="home-container">
-      <div className="hero-section hero-fullscreen">
-        <h1 className="hero-title">🛒 Welcome, Buyer!</h1>
-        <p className="hero-subtitle">Discover and purchase verified blue carbon credits</p>
+      <div className="hero-section hero-buyer">
+        <div className="hero-background"></div>
+        <div className="hero-content">
+          <div className="hero-badge">🛒 Buyer Portal</div>
+          <h1 className="hero-title">Invest in Climate Impact</h1>
+          <p className="hero-subtitle">
+            Purchase premium blue carbon credits from verified coastal restoration projects. 
+            Make a measurable environmental impact while meeting your sustainability goals 
+            through transparent, blockchain-verified transactions.
+          </p>
+          <div className="hero-actions">
+            <Link to="/marketplace" className="btn-hero-primary">
+              Browse Credits
+            </Link>
+            <Link to="/mrv-dashboard-buyer" className="btn-hero-secondary">
+              View Portfolio
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div className="dashboard-grid">
