@@ -5,13 +5,11 @@ export default function AdminHome() {
   return (
     <div className="home-container">
       <div className="hero-section hero-admin">
-        <div className="hero-background"></div>
+        <div className="hero-background">
+          <iframe src='https://my.spline.design/claritystream-PcRCaul9f1sVG5MAA8AqRzW3/' frameborder='0' width='100%' height='100%'></iframe>
+        </div>
         <div className="hero-content">
-          <div className="hero-badge">🛡️ Admin Portal</div>
-          <h1 className="hero-title">Oversee. Verify. Maintain Trust. -Admin Heading.</h1>
-          <p className="hero-subtitle">
-          Ensure transparency in Blue Carbon credit issuance and protect the integrity of India’s climate registry.
-          </p>
+          
           <div className="hero-actions">
             <Link to="/project-verification" className="btn-hero-primary">
               Review Projects

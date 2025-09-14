@@ -5,9 +5,9 @@ body{
 .login-container {
   height: 100vh;
   display: flex;
-  justify-content: right;
+  justify-content: center;
   align-items: center;
-  padding-right: 70px;
+  
   background: linear-gradient(to bottom, #1a237e, #0d47a1);
   background-image: url("./assets/Frame 6 (5).png"); /* optional plant background */
   background-size: cover;
@@ -133,6 +133,7 @@ body{
 
 .home-container {
   max-width: 100%;
+  background-color: #EFF5D2;
   margin: 0 auto;
   min-height: 100px;
 }
@@ -1223,9 +1224,8 @@ body{
 .profile-display-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
   background: #f3f2ef;
-  min-height: 100vh;
+  max-height: 1200px;
 }
 
 .no-profile {
@@ -1760,14 +1760,17 @@ body{
 
 .hero-content h2 {
   font-size: 2rem;
+  color: black;
   margin-bottom: 1rem;
 }
 
 .hero-content p {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   line-height: 1.6;
+  font-weight: bolder;
   max-width: 800px;
   margin: 0 auto;
+  color: rgb(255, 255, 255);
 }
 
 .about-section {
@@ -4249,7 +4252,7 @@ body{
   display: flex;
   gap: 3rem;
   justify-content: center;
-  padding-top: 70px;
+  padding-top: 250px;
 }
 
 .btn-hero-primary,
@@ -4286,7 +4289,8 @@ body{
 
 /* Farmer Hero - Green/Nature Theme */
 .hero-farmer {
-  background: linear-gradient(10deg, grey , grey)
+  background: linear-gradient(100deg, #C6D870 , #8FA31E);
+  background-image: url('https://imgs.search.brave.com/O-CApc8z1DYZdUo_9mt-TMAITei9IClk6wwC3fpPaQQ/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/cGl4YWJheS5jb20v/dmlkZW8vMjAyMS8w/OC8yMS84NTg5Ny01/OTE4NDA3NTVfdGlu/eS5qcGc');
 }
 
 .hero-farmer::before {
@@ -4305,17 +4309,19 @@ body{
 }
 
 .hero-farmer .btn-hero-primary {
-  background: #4caf50;
-  color: white;
+  background: #8FA31E;
+  color: rgb(0, 0, 0);
 }
 
 .hero-farmer .btn-hero-primary:hover {
-  background: #45a049;
+  background: #8FA31E;
 }
 
 /* Buyer Hero - Blue/Investment Theme */
 .hero-buyer {
-  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 50%, #1976d2 100%);
+  background: linear-gradient(135deg, #A1C2BD 0%, #708993 50%, #19183B 100%);
+ 
+ 
 }
 
 .hero-buyer::before {
@@ -4408,7 +4414,7 @@ body{
 
 /* Farmer Navbar */
 .navbar-farmer {
-  background: linear-gradient(135deg, #2d5016 0%, #4a7c59 100%);
+  background: linear-gradient(135deg, rgb(239, 245, 210) 0%,  rgb(198, 216, 112) 100%);
   border-bottom: 3px solid #6b8e23;
 }
 
@@ -4419,11 +4425,11 @@ body{
   text-decoration: none;
   color: white;
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .navbar-farmer .logo-icon {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   animation: pulse 2s infinite;
 }
 
@@ -4435,22 +4441,24 @@ body{
 }
 
 .navbar-farmer .nav-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgb(85, 107, 47);
   transition: all 0.3s ease;
+  font-size: 1.1rem;
+  font-weight: 20px ;
   border-radius: 8px;
   padding: 8px 16px;
 }
 
 .navbar-farmer .nav-link:hover {
-  background: rgba(144, 238, 144, 0.2);
-  color: #90ee90;
+  background: #EFF5D2;
+  color: #000000;
   transform: translateY(-2px);
 }
 
 .navbar-farmer .btn-logout {
-  background: linear-gradient(45deg, #228b22, #32cd32);
+  background: linear-gradient(45deg, #EFF5D2, #EFF5D2);
   border: none;
-  color: white;
+  color: rgb(41, 141, 74);
   padding: 10px 20px;
   border-radius: 25px;
   font-weight: 600;
@@ -4458,14 +4466,14 @@ body{
 }
 
 .navbar-farmer .btn-logout:hover {
-  background: linear-gradient(45deg, #32cd32, #228b22);
+  background: linear-gradient(45deg, #EFF5D2, #e7fa8a);
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(50, 205, 50, 0.3);
 }
 
 /* Buyer Navbar */
 .navbar-buyer {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #708993 0%, #19183B 100%);
   border-bottom: 3px solid #2563eb;
 }
 
@@ -4474,9 +4482,9 @@ body{
   align-items: center;
   gap: 10px;
   text-decoration: none;
-  color: white;
+  color: rgb(0, 0, 0);
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.6rem;
 }
 
 .navbar-buyer .logo-icon {
@@ -4492,7 +4500,8 @@ body{
 }
 
 .navbar-buyer .nav-link {
-  color: rgba(255, 255, 255, 0.9);
+  color: #E7F2EF;
+  font-size: 1.1rem;
   transition: all 0.3s ease;
   border-radius: 8px;
   padding: 8px 16px;
@@ -4522,7 +4531,7 @@ body{
 
 /* Admin Navbar */
 .navbar-admin {
-  background: linear-gradient(135deg, #581c87 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #cfc0da 0%, #200353 100%);
   border-bottom: 3px solid #8b5cf6;
 }
 
@@ -4557,7 +4566,7 @@ body{
 
 .navbar-admin .nav-link:hover {
   background: rgba(167, 139, 250, 0.2);
-  color: #a78bfa;
+  color: #ffffff;
   transform: translateY(-2px);
 }
 
@@ -4895,22 +4904,22 @@ body{
 }
 
 .default-feature-icon {
-  font-size: 4rem;
-  margin-bottom: 20px;
+  font-size: 3.5rem;
+  margin-bottom: 20px ;
   display: block;
 }
 
 .default-feature-card h3 {
-  font-size: 1.5rem;
+  font-size: 1.9rem;
   font-weight: 700;
   margin-bottom: 15px;
   color: #ffffff;
 }
 
 .default-feature-card p {
-  color: #cee1ff;
+  color: white;
   line-height: 1.6;
-  font-size: 1.1rem;
+  font-size: 1.4rem;
 }
 
 /* CTA Section */
@@ -4929,7 +4938,7 @@ body{
 }
 
 .default-cta p {
-  font-size: 1.2rem;
+  font-size: 1.7rem;
   margin-bottom: 40px;
   opacity: 0.9;
 }
@@ -5432,4 +5441,34 @@ body{
   margin-top: 5px;
   font-size: 14px;
   color: #555;
+}
+.default-hero-text .canva {
+  position: relative;
+  width: 400px;   /* adjust size of iframe container */
+  height: 400px;  /* adjust as needed */
+  flex-shrink: 0; /* prevents it from shrinking */
+}
+
+.default-hero-text .canva iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px; /* optional: rounded corners */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15); /* optional: subtle shadow */
+}
+.default-hero-model {
+  flex: 1;
+  max-width: 500px;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.default-hero-model iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
 }
