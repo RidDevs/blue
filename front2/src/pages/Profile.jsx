@@ -1,5 +1,9 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth, db } from "../firebase";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { onAuthStateChanged } from "firebase/auth";
 import "../index.css";
 
 export default function Profile() {
@@ -14,37 +18,77 @@ export default function Profile() {
     bio: "",
     profileImage: null
   });
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setProfileData({ ...docSnap.data(), profileImage: null });
+        } else {
+          setProfileData(prev => ({ ...prev, email: user.email }));
+        }
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProfileData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setProfileData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    setProfileData(prev => ({
-      ...prev,
-      profileImage: file
-    }));
+    if (file) setProfileData(prev => ({ ...prev, profileImage: file }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Save profile data to localStorage or send to backend
-    localStorage.setItem('userProfile', JSON.stringify(profileData));
-    alert('Profile saved successfully!');
-    
-    // Redirect to role-specific home page after profile completion
-    const userRole = localStorage.getItem('userRole');
-    if (userRole) {
-      window.location.href = `/${userRole}`;
-    } else {
-      window.location.href = '/';
+
+    try {
+      const user = auth.currentUser;
+      if (!user) return alert("You must be signed in to save profile.");
+
+      let imageUrl = profileData.profileImageUrl || "";
+
+      // ✅ Safe image upload
+      const file = profileData.profileImage;
+      if (file instanceof File) {
+        const storage = getStorage();
+        // Add timestamp to avoid overwriting previous images
+        const storageRef = ref(storage, `profiles/${user.uid}_${Date.now()}`);
+        await uploadBytes(storageRef, file);
+        imageUrl = await getDownloadURL(storageRef);
+      }
+
+      // Save profile data to Firestore
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          ...profileData,
+          profileImageUrl: imageUrl,
+          profileImage: null, // remove the file blob
+          updatedAt: serverTimestamp(),
+          email: user.email
+        },
+        { merge: true } // merge to avoid overwriting other fields
+      );
+
+      alert("Profile saved successfully!");
+      navigate(`/${profileData.role || "dashboard"}`);
+    } catch (err) {
+      console.error("Profile save error:", err);
+      alert("Error saving profile: " + err.message);
     }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="profile-container">
@@ -54,90 +98,43 @@ export default function Profile() {
       </div>
 
       <form className="profile-form" onSubmit={handleSubmit}>
+        {/* Personal Information */}
         <div className="form-section">
           <h3>Personal Information</h3>
-          
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="firstName">First Name *</label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                value={profileData.firstName}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter your first name"
-              />
+              <input type="text" id="firstName" name="firstName" value={profileData.firstName} onChange={handleInputChange} required placeholder="Enter your first name" />
             </div>
-            
             <div className="form-group">
               <label htmlFor="lastName">Last Name *</label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                value={profileData.lastName}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter your last name"
-              />
+              <input type="text" id="lastName" name="lastName" value={profileData.lastName} onChange={handleInputChange} required placeholder="Enter your last name" />
             </div>
           </div>
 
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="email">Email Address *</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={profileData.email}
-                onChange={handleInputChange}
-                required
-                placeholder="Enter your email"
-              />
+              <input type="email" id="email" name="email" value={profileData.email} onChange={handleInputChange} required placeholder="Enter your email" />
             </div>
-            
             <div className="form-group">
               <label htmlFor="phone">Phone Number</label>
-              <input
-                type="tel"
-                id="phone"
-                name="phone"
-                value={profileData.phone}
-                onChange={handleInputChange}
-                placeholder="Enter your phone number"
-              />
+              <input type="tel" id="phone" name="phone" value={profileData.phone} onChange={handleInputChange} placeholder="Enter your phone number" />
             </div>
           </div>
         </div>
 
+        {/* Professional Information */}
         <div className="form-section">
           <h3>Professional Information</h3>
-          
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="organization">Organization</label>
-              <input
-                type="text"
-                id="organization"
-                name="organization"
-                value={profileData.organization}
-                onChange={handleInputChange}
-                placeholder="Company/Organization name"
-              />
+              <input type="text" id="organization" name="organization" value={profileData.organization} onChange={handleInputChange} placeholder="Company/Organization name" />
             </div>
-            
             <div className="form-group">
               <label htmlFor="role">Role *</label>
-              <select
-                id="role"
-                name="role"
-                value={profileData.role}
-                onChange={handleInputChange}
-                required
-              >
+              <select id="role" name="role" value={profileData.role} onChange={handleInputChange} required>
                 <option value="">Select your role</option>
                 <option value="farmer">Farmer</option>
                 <option value="buyer">Buyer</option>
@@ -146,66 +143,29 @@ export default function Profile() {
               </select>
             </div>
           </div>
-
           <div className="form-group">
             <label htmlFor="location">Location</label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={profileData.location}
-              onChange={handleInputChange}
-              placeholder="City, Country"
-            />
+            <input type="text" id="location" name="location" value={profileData.location} onChange={handleInputChange} placeholder="City, Country" />
           </div>
         </div>
 
+        {/* Additional Information */}
         <div className="form-section">
           <h3>Additional Information</h3>
-          
           <div className="form-group">
             <label htmlFor="profileImage">Profile Image</label>
-            <input
-              type="file"
-              id="profileImage"
-              name="profileImage"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="file-input"
-            />
+            <input type="file" id="profileImage" name="profileImage" accept="image/*" onChange={handleImageChange} className="file-input" />
           </div>
-
           <div className="form-group">
             <label htmlFor="bio">Bio</label>
-            <textarea
-              id="bio"
-              name="bio"
-              value={profileData.bio}
-              onChange={handleInputChange}
-              placeholder="Tell us about yourself and your experience with blue carbon projects..."
-              rows="4"
-            />
+            <textarea id="bio" name="bio" value={profileData.bio} onChange={handleInputChange} placeholder="Tell us about yourself..." rows="4" />
           </div>
         </div>
 
+        {/* Actions */}
         <div className="form-actions">
-          <button type="submit" className="btn-primary">
-            Save Profile
-          </button>
-          <button 
-            type="button" 
-            className="btn-secondary"
-            onClick={() => {
-              const userRole = localStorage.getItem('userRole');
-              if (userRole) {
-                window.location.href = `/${userRole}`;
-              } else {
-                window.location.href = '/';
-              }
-            }}
-          >
-            Skip for Now
-          </button>
+          <button type="submit" className="btn-primary">Save Profile</button>
+          <button type="button" className="btn-secondary" onClick={() => navigate(`/${profileData.role || "dashboard"}`)}>Skip for Now</button>
         </div>
       </form>
     </div>
