@@ -1,12 +1,38 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../index.css";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function MRVDashboardBuyer() {
   const [availableCredits, setAvailableCredits] = useState([]);
   const [purchaseHistory, setPurchaseHistory] = useState([]);
   const [selectedCredits, setSelectedCredits] = useState([]);
   const [purchaseAmount, setPurchaseAmount] = useState('');
+
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      try {
+        const projectsRef = collection(db, "projects");
+        const q = query(projectsRef, where("userId", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+
+        const userProjects = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+
+        setProjects(userProjects);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    } else {
+      setProjects([]);
+    }
+  });
+
+  return () => unsubscribe(); // cleanup
+}, []);
 
   useEffect(() => {
     // Load available credits from all projects and MRV reports

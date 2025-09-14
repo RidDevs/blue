@@ -1,7 +1,11 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import "../index.css";
-import GreenVerifier from "./GreenVerifier";
+import GreenCapture from "./GreenCapture";
+import { db, auth, storage } from "../firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 
 export default function AddProject() {
@@ -34,20 +38,39 @@ export default function AddProject() {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Save project data
-    const existingProjects = JSON.parse(localStorage.getItem('userProjects') || '[]');
-    const newProject = {
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    // 1️⃣ Get current user
+    const user = auth.currentUser;
+    if (!user) {
+      alert("You must be logged in to submit a project.");
+      return;
+    }
+
+    // 2️⃣ Upload documents to Firebase Storage
+    let documentUrls = [];
+    if (projectData.documents) {
+      for (let i = 0; i < projectData.documents.length; i++) {
+        const file = projectData.documents[i];
+        const storageRef = ref(storage, `projects/${user.uid}/${Date.now()}_${file.name}`);
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        documentUrls.push(url);
+      }
+    }
+
+    // 3️⃣ Save project data in Firestore
+    const projectRef = await addDoc(collection(db, "projects"), {
       ...projectData,
-      id: Date.now(),
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    };
-    existingProjects.push(newProject);
-    localStorage.setItem('userProjects', JSON.stringify(existingProjects));
-    alert('Project submitted successfully!');
-    // Reset form
+      documents: documentUrls,
+      userId: user.uid,
+      status: "pending",
+      createdAt: serverTimestamp(),
+    });
+
+    alert("Project submitted successfully!");
     setProjectData({
       projectName: "",
       projectType: "",
@@ -60,7 +83,12 @@ export default function AddProject() {
       coordinates: "",
       documents: null
     });
-  };
+
+  } catch (error) {
+    console.error("Error adding project: ", error);
+    alert("Failed to submit project. Check console for details.");
+  }
+};
 
   return (
     <div className="page-container">
@@ -234,7 +262,12 @@ export default function AddProject() {
         <div className="form-section">
   <h3>Satellite & AI Verification</h3>
 
-  <GreenVerifier/>
+  <GreenCapture />
+</div>
+<div className="form-section">
+  <button type="submit" className="submit-button">
+    Submit Project
+  </button>
 </div>
 
       </form>

@@ -2,6 +2,11 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "../index.css";
 
+import { db, auth } from "../firebase"; // your firebase config
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+
+
 export default function MRVDashboard() {
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -15,11 +20,29 @@ export default function MRVDashboard() {
     notes: ""
   });
 
-  useEffect(() => {
-    // Load user projects
-    const userProjects = JSON.parse(localStorage.getItem('userProjects') || '[]');
-    setProjects(userProjects);
-  }, []);
+useEffect(() => {
+  const fetchUserProjects = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const projectsRef = collection(db, "projects");
+      const q = query(projectsRef, where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+
+      const userProjects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      setProjects(userProjects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  fetchUserProjects();
+}, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

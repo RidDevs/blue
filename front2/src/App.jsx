@@ -10,7 +10,7 @@ import AdminHome from "./pages/AdminHome.jsx";
 import Profile from "./pages/Profile.jsx";
 import ProfileDisplay from "./pages/ProfileDisplay.jsx";
 import AddProject from "./pages/AddProject.jsx";
-import MRVDashboard from "./pages/MRVDashboardfarmer.jsx";
+import MRVDashboardfarmer from "./pages/MRVDashboardfarmer.jsx";
 import MRVDashboardBuyer from "./pages/MRVDashboardbuyer.jsx";
 import Marketplace from "./pages/Marketplace.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
@@ -52,7 +52,7 @@ function AppContent() {
         
         {/* Farmer-specific pages */}
         <Route path="/add-project" element={<AddProject />} />
-        <Route path="/mrv-dashboard" element={<MRVDashboard />} />
+        <Route path="/mrv-dashboard-farmer" element={<MRVDashboardfarmer />} />
         <Route path="/marketplace" element={<Marketplace />} />
         
         {/* Buyer-specific pages */}
