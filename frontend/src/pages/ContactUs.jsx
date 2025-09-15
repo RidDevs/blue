@@ -59,8 +59,8 @@ export default function ContactUs() {
               <div className="method-icon">📧</div>
               <div className="method-details">
                 <h4>Email</h4>
-                <p>support@bluecarbon.com</p>
-                <p>partnerships@bluecarbon.com</p>
+                <p>contact@carbonlens.com</p>
+                <p>partnerships@carbonlens.com</p>
               </div>
             </div>
             
@@ -68,8 +68,8 @@ export default function ContactUs() {
               <div className="method-icon">📱</div>
               <div className="method-details">
                 <h4>Phone</h4>
-                <p>+1 (555) 123-4567</p>
-                <p>Mon-Fri, 9 AM - 6 PM EST</p>
+                <p>+91 9100899879</p>
+                <p>Mon-Sat, 9 AM - 6 PM EST</p>
               </div>
             </div>
             
@@ -77,19 +77,19 @@ export default function ContactUs() {
               <div className="method-icon">📍</div>
               <div className="method-details">
                 <h4>Address</h4>
-                <p>123 Ocean Drive</p>
-                <p>Blue Carbon City, BC 12345</p>
+                <p>TPC</p>
+                <p>JORHAT ENGINEERING COLLEGE</p>
               </div>
             </div>
             
-            <div className="contact-method">
+            {/* <div className="contact-method">
               <div className="method-icon">💬</div>
               <div className="method-details">
                 <h4>Live Chat</h4>
                 <p>Available 24/7</p>
                 <button className="chat-button">Start Chat</button>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 

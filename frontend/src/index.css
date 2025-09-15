@@ -6131,3 +6131,83 @@ body{
     grid-template-columns: 1fr;
   }
 }
+
+
+
+.projects-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive columns */
+  gap: 20px; /* spacing between cards */
+  margin-top: 20px;
+}
+
+.project-status-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.verified {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.status-badge.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.project-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two columns */
+  gap: 12px;
+}
+
+.stat {
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.stat-value {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 4px;
+}
+
+.tx-id {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #2563eb;
+  word-break: break-all;
+}
