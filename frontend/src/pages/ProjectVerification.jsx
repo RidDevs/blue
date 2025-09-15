@@ -10,6 +10,7 @@ export default function ProjectVerification() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [verificationStep, setVerificationStep] = useState(1);
   const [verificationNotes, setVerificationNotes] = useState("");
+  const [creditsToGenerate, setCreditsToGenerate] = useState(""); // New state for credits
 
   // AI & ExG refs
   const capturedImgRef = useRef(null);
@@ -87,6 +88,55 @@ export default function ProjectVerification() {
     }
   };
 
+  // --- New function for credit generation ---
+  const handleGenerateCredits = async () => {
+    if (!selectedProject || selectedProject.status !== 'verified') {
+      alert("Credits can only be generated for a verified project.");
+      return;
+    }
+
+    const credits = parseFloat(creditsToGenerate);
+    if (isNaN(credits) || credits <= 0) {
+      alert("Please enter a valid number of credits to generate.");
+      return;
+    }
+
+    const projectRef = doc(db, "projects", selectedProject.id);
+
+    try {
+      // Simulate a blockchain interaction
+      console.log(`Simulating a blockchain transaction for ${credits} credits...`);
+
+      // Update Firestore to reflect the generated credits
+      await updateDoc(projectRef, {
+        creditsGenerated: (selectedProject.creditsGenerated || 0) + credits,
+        blockchainTx: `tx_${new Date().getTime()}`, // A simple mock transaction ID
+      });
+
+      // Update local state to reflect the change
+      setProjects(prev =>
+        prev.map(p =>
+          p.id === selectedProject.id
+            ? { ...p, creditsGenerated: (p.creditsGenerated || 0) + credits, blockchainTx: `tx_${new Date().getTime()}` }
+            : p
+        )
+      );
+      setSelectedProject(prev => ({
+        ...prev,
+        creditsGenerated: (prev.creditsGenerated || 0) + credits,
+        blockchainTx: `tx_${new Date().getTime()}`,
+      }));
+
+      setCreditsToGenerate("");
+      alert(`${credits} carbon credits successfully generated!`);
+
+    } catch (err) {
+      console.error("Failed to generate credits:", err);
+      alert("Failed to generate credits. Check console for details.");
+    }
+  };
+
+
   const getStatusColor = (status) => {
     switch (status) {
       case "pending": return "status-badge pending";
@@ -128,17 +178,17 @@ export default function ProjectVerification() {
       canvas.width = imgEl.naturalWidth || imgEl.width;
       canvas.height = imgEl.naturalHeight || imgEl.height;
       ctx.drawImage(imgEl, 0, 0);
-      
+
       const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
       let greenPixels = 0;
       const totalPixels = canvas.width * canvas.height;
-      
+
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i], g = data[i + 1], b = data[i + 2];
         const exg = 2 * g - r - b;
         if (exg > 20) greenPixels++;
       }
-      
+
       const percentage = ((greenPixels / totalPixels) * 100).toFixed(1);
       return {
         percentage: parseFloat(percentage),
@@ -188,10 +238,10 @@ export default function ProjectVerification() {
       }
 
       const results = calculateExGOnly(imgEl);
-      
+
       let status = "";
       let icon = "";
-      
+
       if (results.percentage > 15) {
         status = "High vegetation coverage";
         icon = "🌿";
@@ -202,12 +252,12 @@ export default function ProjectVerification() {
         status = "Low vegetation coverage";
         icon = "🟫";
       }
-      
+
       const resultText = `${icon} ${source}: ${results.percentage}% green coverage (${results.greenPixels.toLocaleString()}/${results.totalPixels.toLocaleString()} pixels) - ${status}`;
-      
+
       updateAiResult(index, resultText);
       setAiStatus("✅ ExG analysis complete");
-      
+
     } catch (error) {
       console.error(`ExG analysis failed for ${source}:`, error);
       updateAiResult(index, `❌ ${source}: ExG analysis failed`);
@@ -326,138 +376,154 @@ export default function ProjectVerification() {
         </div>
 
         {/* Project Details + AI Panel */}
-{selectedProject ? (
-  <div className="project-details-panel">
-    {/* Header */}
-    <div className="project-overview">
-      <h2>{selectedProject.projectName || "-"}</h2>
-      <span className={getStatusColor(selectedProject.status)}>
-        {getStatusText(selectedProject.status)}
-      </span>
+        {selectedProject ? (
+          <div className="project-details-panel">
+            {/* Header */}
+            <div className="project-overview">
+              <h2>{selectedProject.projectName || "-"}</h2>
+              <span className={getStatusColor(selectedProject.status)}>
+                {getStatusText(selectedProject.status)}
+              </span>
 
-      {/* Overview Grid */}
-      <div className="overview-grid">
-        <div className="overview-item"><label>Type</label>{selectedProject.projectType || "-"}</div>
-        <div className="overview-item"><label>Location</label>{selectedProject.location || "-"}</div>
-        <div className="overview-item"><label>Area</label>{selectedProject.area || "-"} ha</div>
-        <div className="overview-item"><label>Expected Credits</label>{selectedProject.expectedCredits || "-"} tons CO₂</div>
-        <div className="overview-item"><label>Timeline</label>{selectedProject.timeline || "-"}</div>
-        <div className="overview-item"><label>Methodology</label>{selectedProject.methodology || "-"}</div>
-        <div className="overview-item"><label>Coordinates</label>{selectedProject.coordinates || "-"}</div>
-      </div>
+              {/* Overview Grid */}
+              <div className="overview-grid">
+                <div className="overview-item"><label>Type</label>{selectedProject.projectType || "-"}</div>
+                <div className="overview-item"><label>Location</label>{selectedProject.location || "-"}</div>
+                <div className="overview-item"><label>Area</label>{selectedProject.area || "-"} ha</div>
+                <div className="overview-item"><label>Expected Credits</label>{selectedProject.expectedCredits || "-"} tons CO₂</div>
+                <div className="overview-item"><label>Timeline</label>{selectedProject.timeline || "-"}</div>
+                <div className="overview-item"><label>Methodology</label>{selectedProject.methodology || "-"}</div>
+                <div className="overview-item"><label>Coordinates</label>{selectedProject.coordinates || "-"}</div>
+                {/* New display items */}
+                <div className="overview-item"><label>Generated Credits</label>{selectedProject.creditsGenerated || "-"} tons CO₂</div>
+                <div className="overview-item"><label>Blockchain Tx ID</label><span className="tx-id">{selectedProject.blockchainTx || "-"}</span></div>
+              </div>
 
-      {/* Description */}
-      <div className="project-description">
-        <label>Description</label>
-        <p>{selectedProject.description || "-"}</p>
-      </div>
+              {/* Description */}
+              <div className="project-description">
+                <label>Description</label>
+                <p>{selectedProject.description || "-"}</p>
+              </div>
 
-      {/* Images Section */}
-      {selectedProject.capturedPhoto && (
-        <div className="verifier-image-block">
-          <label>Captured Photo</label>
-          <img
-            ref={capturedImgRef}
-            src={selectedProject.capturedPhoto}
-            alt="Captured"
-            className="project-image"
-            crossOrigin="anonymous"
-          />
-          <canvas ref={capturedOverlayRef} className="overlay-canvas" />
-          <div className="analysis-buttons">
-            <button onClick={() => analyzeImage("Captured Photo", capturedImgRef.current, capturedOverlayRef, 0)}>
-              🤖 AI Analysis
-            </button>
-            <button onClick={() => analyzeExGOnly("Captured Photo", capturedImgRef.current, 0)}>
-              🌿 ExG Only
-            </button>
+              {/* Images Section */}
+              {selectedProject.capturedPhoto && (
+                <div className="verifier-image-block">
+                  <label>Captured Photo</label>
+                  <img
+                    ref={capturedImgRef}
+                    src={selectedProject.capturedPhoto}
+                    alt="Captured"
+                    className="project-image"
+                    crossOrigin="anonymous"
+                  />
+                  <canvas ref={capturedOverlayRef} className="overlay-canvas" />
+                  <div className="analysis-buttons">
+                    <button onClick={() => analyzeImage("Captured Photo", capturedImgRef.current, capturedOverlayRef, 0)}>
+                      🤖 AI Analysis
+                    </button>
+                    <button onClick={() => analyzeExGOnly("Captured Photo", capturedImgRef.current, 0)}>
+                      🌿 ExG Only
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {selectedProject.satImage && (
+                <div className="verifier-image-block">
+                  <label>Satellite Image</label>
+                  <img
+                    ref={satImgRef}
+                    src={selectedProject.satImage}
+                    alt="Satellite"
+                    className="project-image"
+                    crossOrigin="anonymous"
+                  />
+                  <canvas ref={satOverlayRef} className="overlay-canvas" />
+                  <div className="analysis-buttons">
+                    <button onClick={() => analyzeImage("Satellite Image", satImgRef.current, satOverlayRef, 1)}>
+                      🤖 AI Analysis
+                    </button>
+                    <button onClick={() => analyzeExGOnly("Satellite Image", satImgRef.current, 1)}>
+                      🛰️ ExG Only
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {selectedProject.documents?.length > 0 && selectedProject.documents.map((doc, i) => (
+                <div className="verifier-image-block" key={i}>
+                  <label>Uploaded Image {i + 1}</label>
+                  <img
+                    ref={el => uploadedImgRefs.current[i] = el}
+                    src={doc}
+                    alt={`Doc ${i}`}
+                    className="project-image"
+                    crossOrigin="anonymous"
+                  />
+                  <canvas ref={el => uploadedOverlayRefs.current[i] = el} className="overlay-canvas" />
+                  <div className="analysis-buttons">
+                    <button onClick={() => analyzeImage(`Uploaded Image ${i+1}`, uploadedImgRefs.current[i], uploadedOverlayRefs.current[i], i+2)}>
+                      🤖 AI Analysis
+                    </button>
+                    <button onClick={() => analyzeExGOnly(`Uploaded Image ${i+1}`, uploadedImgRefs.current[i], i+2)}>
+                      📸 ExG Only
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {/* AI Panel */}
+              <div className="ai-panel">
+                <div className="ai-controls">
+                  <button onClick={loadAiModel} disabled={!!aiModel}>
+                    {aiModel ? "✅ Model Ready" : "Load AI Model"}
+                  </button>
+                </div>
+                <div className="ai-status">{aiStatus}</div>
+                <div className="ai-results">
+                  {aiResult.map((res, i) => <div key={i} className="result-item">{res}</div>)}
+                </div>
+              </div>
+            </div>
+
+            {/* Verification Actions */}
+            <div className="verification-actions">
+              <textarea value={verificationNotes} onChange={e => setVerificationNotes(e.target.value)} placeholder="Add verification notes..." rows="4" />
+              <button onClick={() => handleVerificationAction("approved")}>✅ Approve</button>
+              <button onClick={() => handleVerificationAction("under_review")}>📝 Request Revision</button>
+              <button onClick={() => handleVerificationAction("rejected")}>❌ Reject</button>
+              <hr style={{ margin: "1rem 0" }} />
+              <div className="credit-generation-controls">
+                <input
+                  type="number"
+                  placeholder="Enter credits to generate..."
+                  value={creditsToGenerate}
+                  onChange={e => setCreditsToGenerate(e.target.value)}
+                  min="0"
+                />
+                <button onClick={handleGenerateCredits} disabled={!selectedProject || selectedProject.status !== 'verified'}>
+                  🪙 Generate Credits
+                </button>
+              </div>
+            </div>
+
+            {/* Verification History */}
+            {selectedProject.verificationHistory?.length > 0 && (
+              <div className="verification-history">
+                <h4>📜 Verification History</h4>
+                {selectedProject.verificationHistory.map((entry, idx) => (
+                  <div key={idx} className="history-item">
+                    <strong>{entry.step}:</strong> {entry.status} by {entry.reviewer} on {entry.date} {entry.notes && `- Notes: ${entry.notes}`}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-        </div>
-      )}
-
-      {selectedProject.satImage && (
-        <div className="verifier-image-block">
-          <label>Satellite Image</label>
-          <img
-            ref={satImgRef}
-            src={selectedProject.satImage}
-            alt="Satellite"
-            className="project-image"
-            crossOrigin="anonymous"
-          />
-          <canvas ref={satOverlayRef} className="overlay-canvas" />
-          <div className="analysis-buttons">
-            <button onClick={() => analyzeImage("Satellite Image", satImgRef.current, satOverlayRef, 1)}>
-              🤖 AI Analysis
-            </button>
-            <button onClick={() => analyzeExGOnly("Satellite Image", satImgRef.current, 1)}>
-              🛰️ ExG Only
-            </button>
+        ) : (
+          <div className="no-selection">
+            <h3>Select a project to view details</h3>
           </div>
-        </div>
-      )}
-
-      {selectedProject.documents?.length > 0 && selectedProject.documents.map((doc, i) => (
-        <div className="verifier-image-block" key={i}>
-          <label>Uploaded Image {i + 1}</label>
-          <img
-            ref={el => uploadedImgRefs.current[i] = el}
-            src={doc}
-            alt={`Doc ${i}`}
-            className="project-image"
-            crossOrigin="anonymous"
-          />
-          <canvas ref={el => uploadedOverlayRefs.current[i] = el} className="overlay-canvas" />
-          <div className="analysis-buttons">
-            <button onClick={() => analyzeImage(`Uploaded Image ${i+1}`, uploadedImgRefs.current[i], uploadedOverlayRefs.current[i], i+2)}>
-              🤖 AI Analysis
-            </button>
-            <button onClick={() => analyzeExGOnly(`Uploaded Image ${i+1}`, uploadedImgRefs.current[i], i+2)}>
-              📸 ExG Only
-            </button>
-          </div>
-        </div>
-      ))}
-
-      {/* AI Panel */}
-      <div className="ai-panel">
-        <div className="ai-controls">
-          <button onClick={loadAiModel} disabled={!!aiModel}>
-            {aiModel ? "✅ Model Ready" : "Load AI Model"}
-          </button>
-        </div>
-        <div className="ai-status">{aiStatus}</div>
-        <div className="ai-results">
-          {aiResult.map((res, i) => <div key={i} className="result-item">{res}</div>)}
-        </div>
-      </div>
-    </div>
-
-    {/* Verification Actions */}
-    <div className="verification-actions">
-      <textarea value={verificationNotes} onChange={e => setVerificationNotes(e.target.value)} placeholder="Add verification notes..." rows="4" />
-      <button onClick={() => handleVerificationAction("approved")}>✅ Approve</button>
-      <button onClick={() => handleVerificationAction("under_review")}>📝 Request Revision</button>
-      <button onClick={() => handleVerificationAction("rejected")}>❌ Reject</button>
-    </div>
-
-    {/* Verification History */}
-    {selectedProject.verificationHistory?.length > 0 && (
-      <div className="verification-history">
-        <h4>📜 Verification History</h4>
-        {selectedProject.verificationHistory.map((entry, idx) => (
-          <div key={idx} className="history-item">
-            <strong>{entry.step}:</strong> {entry.status} by {entry.reviewer} on {entry.date} {entry.notes && `- Notes: ${entry.notes}`}
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-) : (
-  <div className="no-selection">
-    <h3>Select a project to view details</h3>
-  </div>
-)}
+        )}
 
       </div>
     </div>
