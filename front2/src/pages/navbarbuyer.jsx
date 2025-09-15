@@ -38,7 +38,7 @@ export default function Navbar() {
               <span className="nav-icon">🏠︎</span>
               Home
             </Link>
-            <Link to="/mrv-dashboard" className="nav-link">
+            <Link to="/mrv-dashboard-buyer" className="nav-link">
               <span className="nav-icon">📊</span>
               MRV Dashboard
             </Link>

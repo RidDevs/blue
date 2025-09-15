@@ -1,12 +1,9 @@
-
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import "../index.css";
 import GreenCapture from "./GreenCapture";
 import { db, auth, storage } from "../firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-
 
 export default function AddProject() {
   const [projectData, setProjectData] = useState({
@@ -19,7 +16,9 @@ export default function AddProject() {
     timeline: "",
     methodology: "",
     coordinates: "",
-    documents: null
+    documents: null,
+    capturedPhoto: null,
+    satImage: null
   });
 
   const handleInputChange = (e) => {
@@ -38,57 +37,92 @@ export default function AddProject() {
     }));
   };
 
+  // 🔹 Receive data from GreenVerifier
+  const handleVerifierData = (data) => {
+    setProjectData(prev => ({
+      ...prev,
+      coordinates: data.gpsCoords
+        ? `${data.gpsCoords.lat}, ${data.gpsCoords.lon}`
+        : prev.coordinates,
+      capturedPhoto: data.capturedImg || prev.capturedPhoto,
+      satImage: data.satImg || prev.satImage,
+      area: data.measuredArea
+        ? (data.measuredArea / 10000).toFixed(2)
+        : prev.area,
+    }));
+  };
+
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    // 1️⃣ Get current user
-    const user = auth.currentUser;
-    if (!user) {
-      alert("You must be logged in to submit a project.");
-      return;
-    }
-
-    // 2️⃣ Upload documents to Firebase Storage
-    let documentUrls = [];
-    if (projectData.documents) {
-      for (let i = 0; i < projectData.documents.length; i++) {
-        const file = projectData.documents[i];
-        const storageRef = ref(storage, `projects/${user.uid}/${Date.now()}_${file.name}`);
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-        documentUrls.push(url);
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        alert("You must be logged in to submit a project.");
+        return;
       }
+
+      // Upload documents
+      let documentUrls = [];
+      if (projectData.documents) {
+        for (let i = 0; i < projectData.documents.length; i++) {
+          const file = projectData.documents[i];
+          const storageRef = ref(storage, `projects/${user.uid}/${Date.now()}_${file.name}`);
+          await uploadBytes(storageRef, file);
+          documentUrls.push(await getDownloadURL(storageRef));
+        }
+      }
+
+      // Upload captured photo
+      let capturedPhotoUrl = null;
+      if (projectData.capturedPhoto) {
+        const blob = await fetch(projectData.capturedPhoto).then(r => r.blob());
+        const storageRef = ref(storage, `projects/${user.uid}/photo_${Date.now()}.png`);
+        await uploadBytes(storageRef, blob);
+        capturedPhotoUrl = await getDownloadURL(storageRef);
+      }
+
+      // Upload satellite image
+      let satImageUrl = null;
+      if (projectData.satImage) {
+        const blob = await fetch(projectData.satImage).then(r => r.blob());
+        const storageRef = ref(storage, `projects/${user.uid}/satellite_${Date.now()}.png`);
+        await uploadBytes(storageRef, blob);
+        satImageUrl = await getDownloadURL(storageRef);
+      }
+
+      // Save all data to Firestore
+      await addDoc(collection(db, "projects"), {
+        ...projectData,
+        documents: documentUrls,
+        capturedPhoto: capturedPhotoUrl,
+        satImage: satImageUrl,
+        userId: user.uid,
+        status: "pending",
+        createdAt: serverTimestamp(),
+      });
+
+      alert("Project submitted successfully!");
+      setProjectData({
+        projectName: "",
+        projectType: "",
+        location: "",
+        area: "",
+        description: "",
+        expectedCredits: "",
+        timeline: "",
+        methodology: "",
+        coordinates: "",
+        documents: null,
+        capturedPhoto: null,
+        satImage: null
+      });
+
+    } catch (error) {
+      console.error("Error adding project: ", error);
+      alert("Failed to submit project. Check console for details.");
     }
-
-    // 3️⃣ Save project data in Firestore
-    const projectRef = await addDoc(collection(db, "projects"), {
-      ...projectData,
-      documents: documentUrls,
-      userId: user.uid,
-      status: "pending",
-      createdAt: serverTimestamp(),
-    });
-
-    alert("Project submitted successfully!");
-    setProjectData({
-      projectName: "",
-      projectType: "",
-      location: "",
-      area: "",
-      description: "",
-      expectedCredits: "",
-      timeline: "",
-      methodology: "",
-      coordinates: "",
-      documents: null
-    });
-
-  } catch (error) {
-    console.error("Error adding project: ", error);
-    alert("Failed to submit project. Check console for details.");
-  }
-};
+  };
 
   return (
     <div className="page-container">
@@ -100,7 +134,6 @@ export default function AddProject() {
       <form className="project-form" onSubmit={handleSubmit}>
         <div className="form-section">
           <h3>Project Information</h3>
-          
           <div className="form-row">
             <div className="form-group">
               <label htmlFor="projectName">Project Name *</label>
@@ -114,7 +147,6 @@ export default function AddProject() {
                 placeholder="Enter project name"
               />
             </div>
-            
             <div className="form-group">
               <label htmlFor="projectType">Project Type *</label>
               <select
@@ -147,7 +179,6 @@ export default function AddProject() {
                 placeholder="City, State, Country"
               />
             </div>
-            
             <div className="form-group">
               <label htmlFor="area">Project Area (hectares) *</label>
               <input
@@ -177,7 +208,6 @@ export default function AddProject() {
 
         <div className="form-section">
           <h3>Project Details</h3>
-          
           <div className="form-group">
             <label htmlFor="description">Project Description *</label>
             <textarea
@@ -203,7 +233,6 @@ export default function AddProject() {
                 placeholder="Estimated credits per year"
               />
             </div>
-            
             <div className="form-group">
               <label htmlFor="timeline">Project Timeline *</label>
               <select
@@ -243,7 +272,6 @@ export default function AddProject() {
 
         <div className="form-section">
           <h3>Supporting Documents</h3>
-          
           <div className="form-group">
             <label htmlFor="documents">Upload Documents</label>
             <input
@@ -260,16 +288,13 @@ export default function AddProject() {
         </div>
 
         <div className="form-section">
-  <h3>Satellite & AI Verification</h3>
+          <h3>Satellite & AI Verification</h3>
+          <GreenCapture onDataCapture={handleVerifierData} />
+        </div>
 
-  <GreenCapture />
-</div>
-<div className="form-section">
-  <button type="submit" className="submit-button">
-    Submit Project
-  </button>
-</div>
-
+        <div className="form-section">
+          <button type="submit" className="submit-button">Submit Project</button>
+        </div>
       </form>
     </div>
   );

@@ -11,7 +11,7 @@ import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 L.Icon.Default.mergeOptions({ iconUrl, shadowUrl: iconShadow });
 
-export default function GreenVerifier() {
+export default function GreenVerifier({ onDataCapture }) {
   const mapRef = useRef(null);
   const mapDivRef = useRef(null);
   const drawnItemsRef = useRef(null);
@@ -26,35 +26,31 @@ export default function GreenVerifier() {
   const [satImg, setSatImg] = useState(null);
   const [lastMeasuredM2, setLastMeasuredM2] = useState(null);
 
+  // --- Send data up ---
+  useEffect(() => {
+    if (!onDataCapture) return;
+    onDataCapture({
+      gpsCoords,
+      capturedImg,
+      satImg,
+      measuredArea: lastMeasuredM2,
+    });
+  }, [gpsCoords, capturedImg, satImg, lastMeasuredM2]);
+
   // --- Initialize map ---
   useEffect(() => {
     if (mapRef.current) return;
-
     const TILE_TEMPLATE =
       "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-
-    const map = L.map(mapDivRef.current, { zoomControl: true }).setView(
-      [20, 0],
-      2
-    );
-
-    L.tileLayer(TILE_TEMPLATE, {
-      maxZoom: 19,
-      attribution: "Tiles © Esri",
-    }).addTo(map);
+    const map = L.map(mapDivRef.current, { zoomControl: true }).setView([20, 0], 2);
+    L.tileLayer(TILE_TEMPLATE, { maxZoom: 19, attribution: "Tiles © Esri" }).addTo(map);
 
     const drawnItems = new L.FeatureGroup().addTo(map);
     drawnItemsRef.current = drawnItems;
 
     const drawControl = new L.Control.Draw({
       edit: { featureGroup: drawnItems },
-      draw: {
-        polygon: true,
-        rectangle: true,
-        circle: true,
-        marker: false,
-        polyline: false,
-      },
+      draw: { polygon: true, rectangle: true, circle: true, marker: false, polyline: false }
     });
     map.addControl(drawControl);
 
@@ -67,7 +63,7 @@ export default function GreenVerifier() {
     mapRef.current = { map };
   }, []);
 
-  // --- Camera functions ---
+  // --- Camera ---
   async function startCamera() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -91,26 +87,21 @@ export default function GreenVerifier() {
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
           setGpsCoords({ lat, lon });
-
           ctx.fillStyle = "red";
           ctx.font = "24px Arial";
           ctx.fillText(`Lat: ${lat.toFixed(6)}, Lon: ${lon.toFixed(6)}`, 20, 40);
-
           setCapturedImg(canvas.toDataURL("image/png"));
 
           const { map } = mapRef.current;
           map.setView([lat, lon], 18);
-          L.marker([lat, lon])
-            .addTo(map)
-            .bindPopup("Photo GPS point")
-            .openPopup();
+          L.marker([lat, lon]).addTo(map).bindPopup("Photo GPS point").openPopup();
         },
         () => setCapturedImg(canvas.toDataURL("image/png"))
       );
     }
   }
 
-  // --- Upload function ---
+  // --- Upload ---
   function handleUpload(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -123,24 +114,17 @@ export default function GreenVerifier() {
   function captureMapView() {
     const { map } = mapRef.current;
     leafletImage(map, (err, canvas) => {
-      if (err) {
-        alert("Map capture failed: " + err.message);
-        return;
-      }
+      if (err) return alert("Map capture failed: " + err.message);
 
       const polygonLayers = [];
       drawnItemsRef.current.eachLayer((layer) => {
         if (layer instanceof L.Polygon || layer instanceof L.Rectangle) {
           const latlngs = layer.getLatLngs()[0];
-          const coords = latlngs.map((latlng) => map.latLngToContainerPoint(latlng));
-          polygonLayers.push(coords);
+          polygonLayers.push(latlngs.map((latlng) => map.latLngToContainerPoint(latlng)));
         }
       });
 
-      if (polygonLayers.length === 0) {
-        setSatImg(canvas.toDataURL("image/png"));
-        return;
-      }
+      if (polygonLayers.length === 0) return setSatImg(canvas.toDataURL("image/png"));
 
       const maskedCanvas = document.createElement("canvas");
       maskedCanvas.width = canvas.width;
@@ -161,16 +145,11 @@ export default function GreenVerifier() {
     });
   }
 
-  // --- Compute Area ---
   function computeArea(layer) {
     const geojson = layer.toGeoJSON();
     let area = 0;
-    if (geojson.geometry.type === "Polygon") {
-      area = turf.area(geojson);
-    } else if (layer instanceof L.Circle) {
-      const r = layer.getRadius();
-      area = Math.PI * r * r;
-    }
+    if (geojson.geometry.type === "Polygon") area = turf.area(geojson);
+    else if (layer instanceof L.Circle) area = Math.PI * layer.getRadius() ** 2;
     setLastMeasuredM2(area);
   }
 
@@ -183,10 +162,7 @@ export default function GreenVerifier() {
 
   return (
     <div className="verifier-root">
-      <header>
-        <h1>📷 Map & Photo Capture</h1>
-      </header>
-
+      <header><h1>📷 Map & Photo Capture</h1></header>
       <main className="verifier-main">
         <section className="verifier-section">
           <h3>Camera Capture</h3>
@@ -194,12 +170,8 @@ export default function GreenVerifier() {
           <canvas ref={canvasRef} className="hidden-canvas" />
 
           <div className="verifier-buttons">
-            <button type="button" onClick={startCamera}>
-              Start Camera
-            </button>
-            <button type="button" onClick={capturePhoto}>
-              Capture Photo
-            </button>
+            <button type="button" onClick={startCamera}>Start Camera</button>
+            <button type="button" onClick={capturePhoto}>Capture Photo</button>
           </div>
 
           {capturedImg && (
@@ -214,9 +186,7 @@ export default function GreenVerifier() {
           {uploadedImg && <img src={uploadedImg} alt="Uploaded" className="verifier-img" />}
 
           <h3>Satellite Map Capture</h3>
-          <button type="button" onClick={captureMapView}>
-            Capture Map View
-          </button>
+          <button type="button" onClick={captureMapView}>Capture Map View</button>
           {satImg && <img src={satImg} alt="Satellite" className="verifier-img" />}
 
           <h4>Measured Area: {formatArea(lastMeasuredM2)}</h4>

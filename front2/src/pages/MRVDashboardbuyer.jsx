@@ -3,6 +3,10 @@ import { Link } from "react-router-dom";
 import "../index.css";
 import { onAuthStateChanged } from "firebase/auth";
 
+import { auth, db } from "../firebase";  
+
+import { collection, query, where, getDocs } from "firebase/firestore";
+
 export default function MRVDashboardBuyer() {
   const [availableCredits, setAvailableCredits] = useState([]);
   const [purchaseHistory, setPurchaseHistory] = useState([]);
@@ -149,8 +153,8 @@ export default function MRVDashboardBuyer() {
   return (
     <div className="page-container">
       <div className="page-header">
-        <h1 className="page-title">🛒 Carbon Credit Marketplace</h1>
-        <p className="page-subtitle">Purchase verified carbon credits from blue carbon projects</p>
+        <h1 className="page-title">🛒 Carbon Credit Holdings</h1>
+        <p className="page-subtitle">Manage your verified carbon credits from blue carbon projects</p>
       </div>
 
       <div className="mrv-content">
