@@ -41,7 +41,7 @@ export default function DefaultLanding() {
       {/* Features Section */}
       <section className="default-features">
         <div className="default-container">
-          <h2 className="default-section-title">Why Choose BlueCarbon?</h2>
+          <h2 className="default-section-title">Why Choose CarbonLens?</h2>
           <div className="default-features-grid">
             <div className="default-feature-card">
               <div className="default-feature-icon">🌾</div>
@@ -123,7 +123,7 @@ export default function DefaultLanding() {
             </div>
           </div>
           <div className="default-footer-bottom">
-            <p>&copy; 2024 BlueCarbon. All rights reserved.</p>
+            <p>&copy; 2025 CarbonLens- team Cryptocoral. All rights reserved.</p>
           </div>
         </div>
       </footer>

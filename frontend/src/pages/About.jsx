@@ -128,30 +128,30 @@ export default function About() {
         <div className="team-grid">
           <div className="team-member">
             <div className="member-avatar">👨‍💼</div>
-            <h4>Dr. James Ocean</h4>
-            <p className="member-role">CEO & Marine Biologist</p>
-            <p>20+ years in marine conservation and carbon sequestration research.</p>
+            <h4></h4>
+            <p className="member-role"></p>
+            <p></p>
           </div>
           
           <div className="team-member">
             <div className="member-avatar">👩‍💻</div>
-            <h4>Sarah Tech</h4>
-            <p className="member-role">CTO & Blockchain Expert</p>
-            <p>Leading blockchain implementation for transparent carbon trading.</p>
+            <h4></h4>
+            <p className="member-role"></p>
+            <p></p>
           </div>
           
           <div className="team-member">
             <div className="member-avatar">👨‍🔬</div>
-            <h4>Dr. Alex Green</h4>
-            <p className="member-role">Head of Verification</p>
-            <p>Environmental scientist specializing in carbon measurement and verification.</p>
+            <h4></h4>
+            <p className="member-role"></p>
+            <p>.</p>
           </div>
           
           <div className="team-member">
             <div className="member-avatar">👩‍🌾</div>
-            <h4>Maria Community</h4>
-            <p className="member-role">Community Relations Director</p>
-            <p>Connecting coastal communities with conservation opportunities.</p>
+            <h4></h4>
+            <p className="member-role"></p>
+            <p>.</p>
           </div>
         </div>
       </div>
@@ -161,19 +161,19 @@ export default function About() {
         <h3>Our Impact</h3>
         <div className="impact-stats">
           <div className="impact-stat">
-            <div className="impact-number">1,247</div>
+            <div className="impact-number">5</div>
             <div className="impact-label">Active Projects</div>
           </div>
           <div className="impact-stat">
-            <div className="impact-number">125,430</div>
+            <div className="impact-number">19</div>
             <div className="impact-label">Carbon Credits Traded</div>
           </div>
           <div className="impact-stat">
-            <div className="impact-number">50,000</div>
+            <div className="impact-number">50,0</div>
             <div className="impact-label">Hectares Protected</div>
           </div>
           <div className="impact-stat">
-            <div className="impact-number">856</div>
+            <div className="impact-number">3</div>
             <div className="impact-label">Communities Supported</div>
           </div>
         </div>

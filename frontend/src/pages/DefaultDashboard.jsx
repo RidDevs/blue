@@ -22,28 +22,28 @@ export default function DefaultDashboard() {
             <div className="stat-card">
               <div className="stat-icon">🌱</div>
               <div className="stat-content">
-                <h3 className="stat-number">2,450</h3>
+                <h3 className="stat-number">5</h3>
                 <p className="stat-label">Active Projects</p>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-icon">💰</div>
               <div className="stat-content">
-                <h3 className="stat-number">$1.2M</h3>
+                <h3 className="stat-number">Rs 120000</h3>
                 <p className="stat-label">Credits Traded</p>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-icon">🌍</div>
               <div className="stat-content">
-                <h3 className="stat-number">850K</h3>
+                <h3 className="stat-number">85 T</h3>
                 <p className="stat-label">CO2 Tons Offset</p>
               </div>
             </div>
             <div className="stat-card">
               <div className="stat-icon">👥</div>
               <div className="stat-content">
-                <h3 className="stat-number">1,200</h3>
+                <h3 className="stat-number">20</h3>
                 <p className="stat-label">Registered Users</p>
               </div>
             </div>
@@ -61,15 +61,15 @@ export default function DefaultDashboard() {
               <div className="project-list">
                 <div className="project-item">
                   <span className="project-name">Sustainable Rice Farming</span>
-                  <span className="project-credits">250 Credits</span>
+                  <span className="project-credits">5 Credits</span>
                 </div>
                 <div className="project-item">
                   <span className="project-name">Forest Conservation</span>
-                  <span className="project-credits">180 Credits</span>
+                  <span className="project-credits">18 Credits</span>
                 </div>
                 <div className="project-item">
                   <span className="project-name">Solar Energy Initiative</span>
-                  <span className="project-credits">320 Credits</span>
+                  <span className="project-credits">6 Credits</span>
                 </div>
               </div>
             </div>
@@ -83,7 +83,7 @@ export default function DefaultDashboard() {
                 </div>
                 <div className="price-item">
                   <span className="price-label">24h Change</span>
-                  <span className="price-value positive">+2.3%</span>
+                  <span className="price-value positive">0%</span>
                 </div>
                 <div className="price-item">
                   <span className="price-label">Volume</span>
