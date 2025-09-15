@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import * as deeplab from "@tensorflow-models/deeplab";
+import "@tensorflow/tfjs";
 import "../index.css";
 
 export default function ProjectVerification() {
@@ -9,33 +11,37 @@ export default function ProjectVerification() {
   const [verificationStep, setVerificationStep] = useState(1);
   const [verificationNotes, setVerificationNotes] = useState("");
 
-  // 🔹 Fetch projects from Firestore
+  // AI & ExG refs
+  const capturedImgRef = useRef(null);
+  const satImgRef = useRef(null);
+  const uploadedImgRefs = useRef([]);
+  const capturedOverlayRef = useRef(null);
+  const satOverlayRef = useRef(null);
+  const uploadedOverlayRefs = useRef([]);
+
+  const [aiModel, setAiModel] = useState(null);
+  const [aiStatus, setAiStatus] = useState("Model not loaded");
+  const [aiResult, setAiResult] = useState([]);
+
+  // --- Fetch projects ---
   useEffect(() => {
     const fetchProjects = async () => {
       const snapshot = await getDocs(collection(db, "projects"));
-      const data = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-      }));
+      const data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
       setProjects(data);
     };
     fetchProjects();
   }, []);
 
-  // 🔹 Approve / Reject / Request Revision
+  // --- Verification Actions ---
   const handleVerificationAction = async (action) => {
-    console.log("Clicked action:", action, "Selected Project:", selectedProject);
-
-    if (!selectedProject) {
-      alert("No project selected!");
-      return;
-    }
+    if (!selectedProject) return alert("No project selected!");
 
     const projectRef = doc(db, "projects", selectedProject.id);
 
     const newHistoryEntry = {
       step: `Step ${verificationStep}`,
-      reviewer: "Admin User", // Replace with auth.currentUser.email
+      reviewer: "Admin User",
       date: new Date().toISOString().split("T")[0],
       status: action,
       notes: verificationNotes,
@@ -57,18 +63,10 @@ export default function ProjectVerification() {
         ],
       });
 
-      // Update local state
       setProjects((prev) =>
         prev.map((p) =>
           p.id === selectedProject.id
-            ? {
-                ...p,
-                status: newStatus,
-                verificationHistory: [
-                  ...(p.verificationHistory || []),
-                  newHistoryEntry,
-                ],
-              }
+            ? { ...p, status: newStatus, verificationHistory: [...(p.verificationHistory || []), newHistoryEntry] }
             : p
         )
       );
@@ -76,10 +74,7 @@ export default function ProjectVerification() {
       setSelectedProject((prev) => ({
         ...prev,
         status: newStatus,
-        verificationHistory: [
-          ...(prev.verificationHistory || []),
-          newHistoryEntry,
-        ],
+        verificationHistory: [...(prev.verificationHistory || []), newHistoryEntry],
       }));
 
       setVerificationNotes("");
@@ -94,33 +89,198 @@ export default function ProjectVerification() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "pending":
-        return "status-badge pending";
-      case "under_review":
-        return "status-badge active";
-      case "verified":
-        return "status-badge verified";
-      case "rejected":
-        return "status-badge rejected";
-      default:
-        return "status-badge no-reports";
+      case "pending": return "status-badge pending";
+      case "under_review": return "status-badge active";
+      case "verified": return "status-badge verified";
+      case "rejected": return "status-badge rejected";
+      default: return "status-badge no-reports";
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case "pending":
-        return "Pending Review";
-      case "under_review":
-        return "Under Review";
-      case "verified":
-        return "Verified";
-      case "rejected":
-        return "Rejected";
-      default:
-        return "Unknown";
+      case "pending": return "Pending Review";
+      case "under_review": return "Under Review";
+      case "verified": return "Verified";
+      case "rejected": return "Rejected";
+      default: return "Unknown";
     }
   };
+
+  // --- AI Functions ---
+  async function loadAiModel() {
+    setAiStatus("Loading model...");
+    try {
+      const model = await deeplab.load({ base: "pascal", quantizationBytes: 2 });
+      setAiModel(model);
+      setAiStatus("✅ Model loaded!");
+    } catch (error) {
+      console.error("Failed to load model:", error);
+      setAiStatus("❌ Failed to load model");
+    }
+  }
+
+  // Enhanced ExG function that works reliably
+  function calculateExGOnly(imgEl) {
+    try {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = imgEl.naturalWidth || imgEl.width;
+      canvas.height = imgEl.naturalHeight || imgEl.height;
+      ctx.drawImage(imgEl, 0, 0);
+      
+      const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      let greenPixels = 0;
+      const totalPixels = canvas.width * canvas.height;
+      
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i + 1], b = data[i + 2];
+        const exg = 2 * g - r - b;
+        if (exg > 20) greenPixels++;
+      }
+      
+      const percentage = ((greenPixels / totalPixels) * 100).toFixed(1);
+      return {
+        percentage: parseFloat(percentage),
+        greenPixels,
+        totalPixels
+      };
+    } catch (error) {
+      console.error("ExG calculation failed:", error);
+      return { percentage: 0, greenPixels: 0, totalPixels: 0 };
+    }
+  }
+
+  function calculateExG(imgEl) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = imgEl.width;
+    canvas.height = imgEl.height;
+    ctx.drawImage(imgEl, 0, 0);
+    const { data } = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let greenPixels = 0;
+    const totalPixels = canvas.width * canvas.height;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const exg = 2 * g - r - b;
+      if (exg > 20) greenPixels++;
+    }
+    return ((greenPixels / totalPixels) * 100).toFixed(1);
+  }
+
+  // ExG-only analysis function
+  async function analyzeExGOnly(source, imgEl, index) {
+    if (!imgEl) {
+      updateAiResult(index, `❌ ${source}: Image not found`);
+      return;
+    }
+
+    setAiStatus(`Analyzing ${source} with ExG...`);
+
+    try {
+      // Wait for image to load if needed
+      if (!imgEl.complete) {
+        await new Promise((resolve, reject) => {
+          imgEl.onload = resolve;
+          imgEl.onerror = reject;
+          setTimeout(reject, 5000); // 5 second timeout
+        });
+      }
+
+      const results = calculateExGOnly(imgEl);
+      
+      let status = "";
+      let icon = "";
+      
+      if (results.percentage > 15) {
+        status = "High vegetation coverage";
+        icon = "🌿";
+      } else if (results.percentage > 5) {
+        status = "Moderate vegetation coverage";
+        icon = "🌱";
+      } else {
+        status = "Low vegetation coverage";
+        icon = "🟫";
+      }
+      
+      const resultText = `${icon} ${source}: ${results.percentage}% green coverage (${results.greenPixels.toLocaleString()}/${results.totalPixels.toLocaleString()} pixels) - ${status}`;
+      
+      updateAiResult(index, resultText);
+      setAiStatus("✅ ExG analysis complete");
+      
+    } catch (error) {
+      console.error(`ExG analysis failed for ${source}:`, error);
+      updateAiResult(index, `❌ ${source}: ExG analysis failed`);
+      setAiStatus("❌ ExG analysis failed");
+    }
+  }
+
+  async function analyzeImage(source, imgEl, overlayRef, index) {
+    if (!aiModel || !imgEl) {
+      // If no AI model, fall back to ExG only
+      if (!imgEl) {
+        updateAiResult(index, `❌ ${source}: Image not found`);
+        return;
+      }
+      return analyzeExGOnly(source, imgEl, index);
+    }
+
+    setAiStatus(`Analyzing ${source}...`);
+
+    try {
+      const segmentation = await aiModel.segment(imgEl);
+      const data = segmentation.data || segmentation.segmentationMap;
+
+      if (!data) {
+        updateAiResult(index, `❌ Could not analyze ${source}`);
+        setAiStatus("Error");
+        return;
+      }
+
+      const plantId = 21;
+      let plantPixels = 0;
+      for (let i = 0; i < data.length; i++) if (data[i] === plantId) plantPixels++;
+
+      const pctDeepLab = (plantPixels / data.length) * 100;
+      const pctExG = calculateExG(imgEl);
+
+      const canvas = overlayRef.current;
+      const ctx = canvas.getContext("2d");
+      canvas.width = segmentation.width;
+      canvas.height = segmentation.height;
+      const imageData = ctx.createImageData(canvas.width, canvas.height);
+      for (let i = 0; i < data.length; i++) {
+        const idx = i * 4;
+        if (data[i] === plantId) {
+          imageData.data[idx] = 0;
+          imageData.data[idx + 1] = 255;
+          imageData.data[idx + 2] = 0;
+          imageData.data[idx + 3] = 120;
+        } else {
+          imageData.data[idx + 3] = 0;
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+
+      if (pctDeepLab > 1)
+        updateAiResult(index, `✅ ${source}: Greenery detected (${pctDeepLab.toFixed(1)}% via DeepLab)`);
+      else
+        updateAiResult(index, `✅ ${source}: Greenery detected (${pctExG}% via ExG fallback)`);
+
+      setAiStatus("✅ Done");
+    } catch (error) {
+      console.error("AI analysis failed, falling back to ExG:", error);
+      return analyzeExGOnly(source, imgEl, index);
+    }
+  }
+
+  function updateAiResult(index, text) {
+    setAiResult(prev => {
+      const res = [...prev];
+      res[index] = text;
+      return res;
+    });
+  }
 
   return (
     <div className="page-container">
@@ -139,13 +299,14 @@ export default function ProjectVerification() {
             {projects.map((project) => (
               <div
                 key={project.id}
-                className={`project-tile ${
-                  selectedProject?.id === project.id ? "selected" : ""
-                }`}
+                className={`project-tile ${selectedProject?.id === project.id ? "selected" : ""}`}
                 onClick={() => {
                   setSelectedProject(project);
                   setVerificationStep(1);
                   setVerificationNotes("");
+                  setAiResult([]);
+                  uploadedImgRefs.current = [];
+                  uploadedOverlayRefs.current = [];
                 }}
               >
                 <div className="tile-header">
@@ -164,188 +325,140 @@ export default function ProjectVerification() {
           </div>
         </div>
 
-        {/* Selected Project Details */}
-        {selectedProject ? (
-          <div className="project-details-panel">
-            {/* Project Overview */}
-            <div className="project-overview">
-              <div className="overview-header">
-                <h2>{selectedProject.projectName || selectedProject.name}</h2>
-                <span className={getStatusColor(selectedProject.status)}>
-                  {getStatusText(selectedProject.status)}
-                </span>
-              </div>
+        {/* Project Details + AI Panel */}
+{selectedProject ? (
+  <div className="project-details-panel">
+    {/* Header */}
+    <div className="project-overview">
+      <h2>{selectedProject.projectName || "-"}</h2>
+      <span className={getStatusColor(selectedProject.status)}>
+        {getStatusText(selectedProject.status)}
+      </span>
 
-              <div className="overview-grid">
-                <div className="overview-item">
-                  <label>Project Type</label>
-                  <span>{selectedProject.projectType || selectedProject.type}</span>
-                </div>
-                <div className="overview-item">
-                  <label>Location</label>
-                  <span>{selectedProject.location}</span>
-                </div>
-                <div className="overview-item">
-                  <label>Area</label>
-                  <span>{selectedProject.area || "-"} hectares</span>
-                </div>
-                <div className="overview-item">
-                  <label>Timeline</label>
-                  <span>{selectedProject.timeline || "-"}</span>
-                </div>
-                <div className="overview-item">
-                  <label>Methodology</label>
-                  <span>{selectedProject.methodology || "-"}</span>
-                </div>
-                <div className="overview-item">
-                  <label>Coordinates</label>
-                  <span>{selectedProject.coordinates || "-"}</span>
-                </div>
-                <div className="overview-item">
-                  <label>Expected Credits</label>
-                  <span>{selectedProject.expectedCredits || "-"} tons CO₂</span>
-                </div>
-              </div>
+      {/* Overview Grid */}
+      <div className="overview-grid">
+        <div className="overview-item"><label>Type</label>{selectedProject.projectType || "-"}</div>
+        <div className="overview-item"><label>Location</label>{selectedProject.location || "-"}</div>
+        <div className="overview-item"><label>Area</label>{selectedProject.area || "-"} ha</div>
+        <div className="overview-item"><label>Expected Credits</label>{selectedProject.expectedCredits || "-"} tons CO₂</div>
+        <div className="overview-item"><label>Timeline</label>{selectedProject.timeline || "-"}</div>
+        <div className="overview-item"><label>Methodology</label>{selectedProject.methodology || "-"}</div>
+        <div className="overview-item"><label>Coordinates</label>{selectedProject.coordinates || "-"}</div>
+      </div>
 
-              <div className="project-description">
-                <label>Description</label>
-                <p>{selectedProject.description}</p>
-              </div>
+      {/* Description */}
+      <div className="project-description">
+        <label>Description</label>
+        <p>{selectedProject.description || "-"}</p>
+      </div>
 
-              {selectedProject.documents?.length > 0 && (
-                <div className="project-documents">
-                  <label>📎 Documents</label>
-                  <ul>
-                    {selectedProject.documents.map((doc, i) => (
-                      <li key={i}>{doc}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="project-images">
-                {selectedProject.capturedPhoto && (
-                  <div className="image-container">
-                    <label>Captured Photo</label>
-                    <img
-                      src={selectedProject.capturedPhoto}
-                      alt="Captured"
-                      className="project-image"
-                    />
-                  </div>
-                )}
-
-                {selectedProject.satImage && (
-                  <div className="image-container">
-                    <label>Satellite Image</label>
-                    <img
-                      src={selectedProject.satImage}
-                      alt="Satellite"
-                      className="project-image"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Verification Panel */}
-            <div className="verification-panel">
-              <div className="panel-header">
-                <h3>🔍 Verification Process</h3>
-              </div>
-
-              <div className="verification-steps">
-                {[1, 2, 3, 4].map((step) => {
-                  const titles = ["Document Review", "Technical Assessment", "Field Verification", "Final Approval"];
-                  const descs = [
-                    "Review submitted documentation and verify completeness",
-                    "Evaluate technical feasibility and carbon calculations",
-                    "Conduct on-site verification and measurements",
-                    "Approve or reject the project for carbon credit generation",
-                  ];
-                  return (
-                    <div
-                      key={step}
-                      className={`step-item ${verificationStep >= step ? "active" : ""}`}
-                    >
-                      <div className="step-number">{step}</div>
-                      <div className="step-content">
-                        <h5>{titles[step - 1]}</h5>
-                        <p>{descs[step - 1]}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Verification Actions */}
-              <div className="verification-actions">
-                <div className="action-section">
-                  <h4>Verification Notes</h4>
-                  <textarea
-                    value={verificationNotes}
-                    onChange={(e) => setVerificationNotes(e.target.value)}
-                    placeholder="Add your verification notes..."
-                    rows="4"
-                  />
-                </div>
-
-                <div className="action-buttons">
-                  <button
-                    className="btn-primary"
-                    onClick={() => handleVerificationAction("approved")}
-                  >
-                    ✅ Approve
-                  </button>
-                  <button
-                    className="btn-secondary"
-                    onClick={() => handleVerificationAction("under_review")}
-                  >
-                    📝 Request Revision
-                  </button>
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleVerificationAction("rejected")}
-                  >
-                    ❌ Reject
-                  </button>
-                </div>
-              </div>
-
-              {/* Verification History */}
-              {selectedProject.verificationHistory?.length > 0 && (
-                <div className="verification-history">
-                  <h4>📜 Verification History</h4>
-                  <div className="history-timeline">
-                    {selectedProject.verificationHistory.map((entry, index) => (
-                      <div key={index} className="history-item">
-                        <div className="history-icon">
-                          {entry.status === "verified" ? "✅" : entry.status === "rejected" ? "❌" : "⏳"}
-                        </div>
-                        <div className="history-content">
-                          <div className="history-header">
-                            <h5>{entry.step}</h5>
-                            <span className="history-date">{entry.date}</span>
-                          </div>
-                          <p><strong>Reviewer:</strong> {entry.reviewer}</p>
-                          <p><strong>Status:</strong> {entry.status}</p>
-                          {entry.notes && <p><strong>Notes:</strong> {entry.notes}</p>}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+      {/* Images Section */}
+      {selectedProject.capturedPhoto && (
+        <div className="verifier-image-block">
+          <label>Captured Photo</label>
+          <img
+            ref={capturedImgRef}
+            src={selectedProject.capturedPhoto}
+            alt="Captured"
+            className="project-image"
+            crossOrigin="anonymous"
+          />
+          <canvas ref={capturedOverlayRef} className="overlay-canvas" />
+          <div className="analysis-buttons">
+            <button onClick={() => analyzeImage("Captured Photo", capturedImgRef.current, capturedOverlayRef, 0)}>
+              🤖 AI Analysis
+            </button>
+            <button onClick={() => analyzeExGOnly("Captured Photo", capturedImgRef.current, 0)}>
+              🌿 ExG Only
+            </button>
           </div>
-        ) : (
-          <div className="no-selection">
-            <div className="no-selection-content">
-              <h3>Select a project to view details</h3>
-              <p>Choose a project from the list to start the verification process</p>
-            </div>
+        </div>
+      )}
+
+      {selectedProject.satImage && (
+        <div className="verifier-image-block">
+          <label>Satellite Image</label>
+          <img
+            ref={satImgRef}
+            src={selectedProject.satImage}
+            alt="Satellite"
+            className="project-image"
+            crossOrigin="anonymous"
+          />
+          <canvas ref={satOverlayRef} className="overlay-canvas" />
+          <div className="analysis-buttons">
+            <button onClick={() => analyzeImage("Satellite Image", satImgRef.current, satOverlayRef, 1)}>
+              🤖 AI Analysis
+            </button>
+            <button onClick={() => analyzeExGOnly("Satellite Image", satImgRef.current, 1)}>
+              🛰️ ExG Only
+            </button>
           </div>
-        )}
+        </div>
+      )}
+
+      {selectedProject.documents?.length > 0 && selectedProject.documents.map((doc, i) => (
+        <div className="verifier-image-block" key={i}>
+          <label>Uploaded Image {i + 1}</label>
+          <img
+            ref={el => uploadedImgRefs.current[i] = el}
+            src={doc}
+            alt={`Doc ${i}`}
+            className="project-image"
+            crossOrigin="anonymous"
+          />
+          <canvas ref={el => uploadedOverlayRefs.current[i] = el} className="overlay-canvas" />
+          <div className="analysis-buttons">
+            <button onClick={() => analyzeImage(`Uploaded Image ${i+1}`, uploadedImgRefs.current[i], uploadedOverlayRefs.current[i], i+2)}>
+              🤖 AI Analysis
+            </button>
+            <button onClick={() => analyzeExGOnly(`Uploaded Image ${i+1}`, uploadedImgRefs.current[i], i+2)}>
+              📸 ExG Only
+            </button>
+          </div>
+        </div>
+      ))}
+
+      {/* AI Panel */}
+      <div className="ai-panel">
+        <div className="ai-controls">
+          <button onClick={loadAiModel} disabled={!!aiModel}>
+            {aiModel ? "✅ Model Ready" : "Load AI Model"}
+          </button>
+        </div>
+        <div className="ai-status">{aiStatus}</div>
+        <div className="ai-results">
+          {aiResult.map((res, i) => <div key={i} className="result-item">{res}</div>)}
+        </div>
+      </div>
+    </div>
+
+    {/* Verification Actions */}
+    <div className="verification-actions">
+      <textarea value={verificationNotes} onChange={e => setVerificationNotes(e.target.value)} placeholder="Add verification notes..." rows="4" />
+      <button onClick={() => handleVerificationAction("approved")}>✅ Approve</button>
+      <button onClick={() => handleVerificationAction("under_review")}>📝 Request Revision</button>
+      <button onClick={() => handleVerificationAction("rejected")}>❌ Reject</button>
+    </div>
+
+    {/* Verification History */}
+    {selectedProject.verificationHistory?.length > 0 && (
+      <div className="verification-history">
+        <h4>📜 Verification History</h4>
+        {selectedProject.verificationHistory.map((entry, idx) => (
+          <div key={idx} className="history-item">
+            <strong>{entry.step}:</strong> {entry.status} by {entry.reviewer} on {entry.date} {entry.notes && `- Notes: ${entry.notes}`}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+) : (
+  <div className="no-selection">
+    <h3>Select a project to view details</h3>
+  </div>
+)}
+
       </div>
     </div>
   );
