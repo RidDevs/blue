@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
-import "../index.css"; // Make sure your CSS includes the styles below
+import "../index.css";
 
 export default function ProjectVerification() {
   const [projects, setProjects] = useState([]);
@@ -24,13 +24,18 @@ export default function ProjectVerification() {
 
   // 🔹 Approve / Reject / Request Revision
   const handleVerificationAction = async (action) => {
-    if (!selectedProject) return;
+    console.log("Clicked action:", action, "Selected Project:", selectedProject);
+
+    if (!selectedProject) {
+      alert("No project selected!");
+      return;
+    }
 
     const projectRef = doc(db, "projects", selectedProject.id);
 
     const newHistoryEntry = {
       step: `Step ${verificationStep}`,
-      reviewer: "Admin User", // Replace with auth.currentUser.email if needed
+      reviewer: "Admin User", // Replace with auth.currentUser.email
       date: new Date().toISOString().split("T")[0],
       status: action,
       notes: verificationNotes,
@@ -43,45 +48,50 @@ export default function ProjectVerification() {
         ? "rejected"
         : "under_review";
 
-    // 🔹 Update Firestore
-    await updateDoc(projectRef, {
-      status: newStatus,
-      verificationHistory: [
-        ...(selectedProject.verificationHistory || []),
-        newHistoryEntry,
-      ],
-    });
+    try {
+      await updateDoc(projectRef, {
+        status: newStatus,
+        verificationHistory: [
+          ...(selectedProject.verificationHistory || []),
+          newHistoryEntry,
+        ],
+      });
 
-    // 🔹 Update local state
-    setProjects(
-      projects.map((p) =>
-        p.id === selectedProject.id
-          ? {
-              ...p,
-              status: newStatus,
-              verificationHistory: [
-                ...(p.verificationHistory || []),
-                newHistoryEntry,
-              ],
-            }
-          : p
-      )
-    );
+      // Update local state
+      setProjects((prev) =>
+        prev.map((p) =>
+          p.id === selectedProject.id
+            ? {
+                ...p,
+                status: newStatus,
+                verificationHistory: [
+                  ...(p.verificationHistory || []),
+                  newHistoryEntry,
+                ],
+              }
+            : p
+        )
+      );
 
-    setSelectedProject({
-      ...selectedProject,
-      status: newStatus,
-      verificationHistory: [
-        ...(selectedProject.verificationHistory || []),
-        newHistoryEntry,
-      ],
-    });
+      setSelectedProject((prev) => ({
+        ...prev,
+        status: newStatus,
+        verificationHistory: [
+          ...(prev.verificationHistory || []),
+          newHistoryEntry,
+        ],
+      }));
 
-    setVerificationNotes("");
-    setVerificationStep(verificationStep + 1);
+      setVerificationNotes("");
+      setVerificationStep((prev) => prev + 1);
+
+      alert(`Project ${action} successfully!`);
+    } catch (err) {
+      console.error("Firestore update failed:", err);
+      alert("Failed to update project. Check console for details.");
+    }
   };
 
-  // 🔹 CSS Helpers
   const getStatusColor = (status) => {
     switch (status) {
       case "pending":
@@ -122,7 +132,7 @@ export default function ProjectVerification() {
       </div>
 
       <div className="verification-layout">
-        {/* Project Tiles Grid */}
+        {/* Project Tiles */}
         <div className="projects-sidebar">
           <h3>Projects ({projects.length})</h3>
           <div className="projects-list">
@@ -202,7 +212,6 @@ export default function ProjectVerification() {
                 <p>{selectedProject.description}</p>
               </div>
 
-              {/* Documents */}
               {selectedProject.documents?.length > 0 && (
                 <div className="project-documents">
                   <label>📎 Documents</label>
@@ -214,7 +223,6 @@ export default function ProjectVerification() {
                 </div>
               )}
 
-              {/* Images */}
               <div className="project-images">
                 {selectedProject.capturedPhoto && (
                   <div className="image-container">
@@ -230,10 +238,10 @@ export default function ProjectVerification() {
                 {selectedProject.satImage && (
                   <div className="image-container">
                     <label>Satellite Image</label>
-                    <img 
-                      src={selectedProject.satImage} 
-                      alt="Satellite" 
-                      className="project-image" 
+                    <img
+                      src={selectedProject.satImage}
+                      alt="Satellite"
+                      className="project-image"
                     />
                   </div>
                 )}
@@ -246,7 +254,6 @@ export default function ProjectVerification() {
                 <h3>🔍 Verification Process</h3>
               </div>
 
-              {/* Steps */}
               <div className="verification-steps">
                 {[1, 2, 3, 4].map((step) => {
                   const titles = ["Document Review", "Technical Assessment", "Field Verification", "Final Approval"];
