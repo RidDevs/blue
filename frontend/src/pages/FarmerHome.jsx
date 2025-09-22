@@ -10,7 +10,7 @@ export default function FarmerHome() {
           <div className="hero-badge">🌾 Farmer Portal</div>
           <h1 className="hero-title">Protecting Blue Carbon Ecosystems</h1>
           <p className="hero-subtitle">
-          Monitor, report, and verify blue carbon projects with transparent blockchain technology and community-driven impact tracking.
+          Monitor, report, and verify  carbon projects with transparent blockchain technology and community-driven impact tracking.
           </p>
           <div className="hero-actions">
             <Link to="/add-project" className="btn-hero-primary">
