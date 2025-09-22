@@ -20,6 +20,22 @@ import UserManagement from "./pages/UserManagement.jsx";
 import Transactions from "./pages/Transactions.jsx";
 import Reports from "./pages/Reports.jsx";
 
+/*deploying*/
+import { BrowserRouter } from "react-router-dom";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <BrowserRouter basename="/blue">
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+/*deploying*/
+
+
 function AppContent() {
   const location = useLocation();
   const hideNavbar = location.pathname === '/login' || location.pathname === '/signup' || location.pathname === '/' || location.pathname === '/dashboard' || location.pathname === '/about' || location.pathname === '/contact';
