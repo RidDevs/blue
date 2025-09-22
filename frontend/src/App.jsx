@@ -34,7 +34,7 @@ function AppContent() {
     <>
       {!hideNavbar && <NavbarWrapper />}
       <Routes>
-        <Route path="/" element={<DefaultLanding />} />
+        <Route path="/blue" element={<DefaultLanding />} />
         <Route path="/dashboard" element={<DefaultDashboard />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<SignUp />} />
