@@ -69,9 +69,9 @@ export default function Navbar() {
                 </Link>
               </>
             ) : (
-              <button onClick={handleLogout} className="btn-logout">
+              <a href="./login"><button onClick={handleLogout} className="btn-logout">
                 Logout
-              </button>
+              </button></a>
             )}
           </div>
         </div>

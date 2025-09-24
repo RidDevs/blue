@@ -29,9 +29,10 @@ export default function Navbar() {
       <div className="navbar-content">
         
         {/* Left side - Logo */}
+        <div className="navbar-logo-button">
        <button><a href="./Buyer"> <div className="navbar-logo">
           
-        </div></a></button>
+        </div></a></button></div>
 
         {/* Right side - Navigation and Buttons */}
         <div className="navbar-right">
@@ -70,9 +71,9 @@ export default function Navbar() {
                 </Link>
               </>
             ) : (
-              <button onClick={handleLogout} className="btn-logout">
+              <a href="./login"><button onClick={handleLogout} className="btn-logout">
                 Logout
-              </button>
+              </button></a>
             )}
           </div>
         </div>

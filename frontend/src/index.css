@@ -386,6 +386,7 @@ body{
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  
   flex-wrap: nowrap;
 }
 
@@ -393,6 +394,7 @@ body{
 .navbar-logo {
   background-image: url("./assets/logo1.png");
   background-size: contain;
+   
   background-repeat: no-repeat;
   background-position: center;
   width: 200px;
@@ -6236,4 +6238,10 @@ body{
 .back button:hover {
   background-color: #a5cce6;
   transform: scale(1.05);
+}
+.navbar-logo-button button{
+background: transparent;
+opacity: 0.7;
+border: none;
+padding: 0 px;
 }
