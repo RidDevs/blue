@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import "./BuyerHome";
 
 export default function Navbar() {
   const location = useLocation();
@@ -28,8 +29,9 @@ export default function Navbar() {
       <div className="navbar-content">
         
         {/* Left side - Logo */}
-        <div className="navbar-logo">
-        </div>
+       <button><a href="./Buyer"> <div className="navbar-logo">
+          
+        </div></a></button>
 
         {/* Right side - Navigation and Buttons */}
         <div className="navbar-right">

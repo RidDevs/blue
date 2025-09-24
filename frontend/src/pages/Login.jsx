@@ -51,6 +51,7 @@ export default function Login() {
           Don't have an account? <Link to="/signup">Sign Up</Link>
         </div>
       </div>
+      <div class="back"><a href="./"><button>❮ Back to Home</button></a></div>
     </div>
   );
 }

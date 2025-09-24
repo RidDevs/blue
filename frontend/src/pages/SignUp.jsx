@@ -4,6 +4,7 @@ import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 import "../index.css";
+import "./DefaultLanding"
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -76,6 +77,8 @@ export default function SignUp() {
         <div className="auth-link">
           Already have an account? <Link to="/login">Sign In</Link>
         </div>
+      </div>
+      <div class="back"><a href="./"><button> ❮ Back to Home </button></a>
       </div>
     </div>
   );

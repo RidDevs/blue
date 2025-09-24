@@ -8,7 +8,7 @@ export default function DefaultNavbar() {
         
         {/* Left side - Logo */}
         <div className="navbar-logo">
-          
+          <a href="./"><button></button></a>
         </div>
 
         {/* Right side - Navigation and Buttons */}

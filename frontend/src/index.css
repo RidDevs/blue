@@ -403,6 +403,7 @@ body{
   cursor: pointer;
   border-radius: 8px;
   box-sizing: border-box;
+ 
 }
 
 /* Right side container */
@@ -6210,4 +6211,29 @@ body{
   font-size: 0.85rem;
   color: #2563eb;
   word-break: break-all;
+}
+.back {
+  text-align: left;  /* align content to the left */
+  margin-top: 20px;  /* space from the login card */
+  padding-left: 10px; /* optional: add some padding from the edge */
+}
+
+.back button {
+  background-color: #8db8f8;
+  color: rgb(0, 0, 0);
+  border: none;
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.back button:hover {
+  background-color: #a5cce6;
+  transform: scale(1.05);
 }
