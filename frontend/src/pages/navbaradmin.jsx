@@ -28,8 +28,10 @@ export default function Navbar() {
       <div className="navbar-content">
         
         {/* Left side - Logo */}
-        <div className="navbar-logo">
-        </div>
+        <div className="navbar-logo-button">
+       <button><a href="./admin"> <div className="navbar-logo">
+          
+        </div></a></button></div>
 
         {/* Right side - Navigation and Buttons */}
         <div className="navbar-right">

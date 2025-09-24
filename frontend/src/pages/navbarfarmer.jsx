@@ -28,9 +28,11 @@ export default function Navbar() {
       <div className="navbar-content">
         
         {/* Left side - Logo */}
-        <div className="navbar-logo">
+        
+        <div className="navbar-logo-button">
+       <button><a href="./farmer"> <div className="navbar-logo">
           
-        </div>
+        </div></a></button></div>
 
         {/* Right side - Navigation and Buttons */}
         <div className="navbar-right">
