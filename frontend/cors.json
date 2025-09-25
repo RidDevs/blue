@@ -1,7 +1,9 @@
+
 [
   {
-    "origin": ["http://localhost:5173", "https://your-production-domain.com"],
-    "method": ["GET", "HEAD"],
-    "maxAgeSeconds": 3600
+    "origin": ["http://localhost:5173", "https://www.carbonlens.space", "https://carbonlens.space"],
+    "method": ["GET", "POST", "PUT", "DELETE"],
+    "maxAgeSeconds": 3600,
+    "responseHeader": ["Content-Type", "Authorization"]
   }
 ]

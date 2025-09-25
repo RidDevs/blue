@@ -12,6 +12,7 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(false); // 🔥 loading state
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
@@ -29,6 +30,8 @@ export default function SignUp() {
     }
 
     try {
+      setLoading(true); // start spinner
+
       // Create user in Firebase Auth
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
@@ -45,6 +48,8 @@ export default function SignUp() {
       navigate("/login"); // redirect to login
     } catch (error) {
       alert("Signup failed: " + error.message);
+    } finally {
+      setLoading(false); // stop spinner
     }
   };
 
@@ -72,14 +77,17 @@ export default function SignUp() {
           <button onClick={() => setRole("admin")} className={role === "admin" ? "active" : ""}>🛡️ Admin</button>
         </div>
 
-        <button onClick={handleSignUp} className="login-btn">CREATE ACCOUNT</button>
+        <button onClick={handleSignUp} className="login-btn" disabled={loading}>
+          {loading ? "Creating Account..." : "CREATE ACCOUNT"}
+        </button>
+
+        {loading && <div className="spinner"></div>} {/* 🔥 Spinner */}
 
         <div className="auth-link">
           Already have an account? <Link to="/login">Sign In</Link>
         </div>
       </div>
-      <div class="back"><a href="./"><button> ❮ Back to Home </button></a>
-      </div>
+      <div className="back"><a href="./"><button> ❮ Back to Home </button></a></div>
     </div>
   );
 }
