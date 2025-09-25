@@ -28,9 +28,16 @@ export default function DefaultLanding() {
           </div>
 
           {/* Right side spline model */}
-          <div className="right-side">
-            
-          </div>
+         <div className="right-side">
+  <div className="floating-emojis">
+    <span className="emoji e1">🌱</span>
+    <span className="emoji e2">🌍</span>
+    <span className="emoji e3">☁️</span>
+    <span className="emoji e4">🌳</span>
+    <span className="emoji e5">🍃</span>
+  </div>
+</div>
+
         </div>
       </section>
 
