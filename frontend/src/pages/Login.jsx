@@ -8,10 +8,12 @@ import "../index.css";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // 🔥 loading state
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
+      setLoading(true); // start spinner
       // Sign in user with Firebase Auth
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCredential.user.uid;
@@ -30,6 +32,8 @@ export default function Login() {
       }
     } catch (error) {
       alert("Login failed: " + error.message);
+    } finally {
+      setLoading(false); // stop spinner
     }
   };
 
@@ -45,13 +49,18 @@ export default function Login() {
         <input type="password" placeholder="Password" className="login-input"
           value={password} onChange={(e) => setPassword(e.target.value)} />
 
-        <button onClick={handleLogin} className="login-btn">LOGIN</button>
+        <button onClick={handleLogin} className="login-btn" disabled={loading}>
+          {loading ? "Logging in..." : "LOGIN"}
+        </button>
+
+        {loading && <div className="spinner"></div>} {/* 🔥 Spinner */}
 
         <div className="auth-link">
           Don't have an account? <Link to="/signup">Sign Up</Link>
         </div>
       </div>
-      <div class="back"><a href="./"><button>❮ Back to Home</button></a></div>
+      <div className="back"><a href="./"><button>❮ Back to Home</button></a></div>
     </div>
   );
 }
+
