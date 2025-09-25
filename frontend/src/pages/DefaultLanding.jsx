@@ -28,12 +28,8 @@ export default function DefaultLanding() {
           </div>
 
           {/* Right side spline model */}
-          <div className="default-hero-model">
-            <iframe
-              src="https://my.spline.design/genkubgreetingrobot-dVHldvYzWSRPJIIqAToqFLfi/"
-              frameBorder="0"
-              title="Spline 3D Model"
-            ></iframe>
+          <div className="right-side">
+            
           </div>
         </div>
       </section>

@@ -7,9 +7,10 @@ export default function DefaultNavbar() {
       <div className="navbar-content">
         
         {/* Left side - Logo */}
-        <div className="navbar-logo">
-          <a href="./"><button></button></a>
-        </div>
+          <div className="navbar-logo-button">
+       <button><a href="./"> <div className="navbar-logo">
+          
+        </div></a></button></div>
 
         {/* Right side - Navigation and Buttons */}
         <div className="navbar-right">

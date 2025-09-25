@@ -5,9 +5,7 @@ export default function AdminHome() {
   return (
     <div className="home-container">
       <div className="hero-section hero-admin">
-        <div className="hero-background">
-          <iframe src='https://my.spline.design/claritystream-PcRCaul9f1sVG5MAA8AqRzW3/' frameborder='0' width='100%' height='100%'></iframe>
-        </div>
+        <div className="admin-admin"><h1>Welcome to the Admin Site.</h1></div>
         <div className="hero-content">
           
           <div className="hero-actions">
