@@ -4353,7 +4353,7 @@ body{
 
 /* Admin Hero - Purple/Authority Theme */
 .hero-admin {
-  background: linear-gradient(135deg, rgb(66, 8, 88), rgb(215, 107, 236) , rgb(128, 39, 150));
+  background: linear-gradient(135deg, rgb(71, 54, 223), rgb(121, 109, 177) , rgb(189, 54, 243));
 }
 
 .hero-admin::before {
@@ -4368,7 +4368,12 @@ body{
 }
 .admin-admin h1{
   color:black;
-  top: 30px;
+  top:1px;
+  left: 325px;
+  padding-top: 90px;
+  position: absolute;
+  font-weight: bolder;
+  font-size: 3rem;
 }
 
 .hero-admin .stat-number {
