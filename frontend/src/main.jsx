@@ -6,7 +6,7 @@ import App from "./App.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter basename="/blue">   {/* ✅ repo name as basename */}
+    <BrowserRouter basename="/">   {/* ✅ repo name as basename */}
       <App />
     </BrowserRouter>
   </StrictMode>
