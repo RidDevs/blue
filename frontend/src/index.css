@@ -6313,3 +6313,18 @@ padding: 0 px;
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.about-content p{
+  font-weight: bold;
+  font-size: 1.4rem;
+  max-width: 800px;
+  position: relative;
+  left: 18%;
+}
+.about-content h2{
+  font-size: 2.5rem;
+  font-weight: 700;
+ position: relative;
+ left: -1%; 
+  margin-bottom: 20px;
+  color: rgb(0, 0, 0);
+}

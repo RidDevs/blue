@@ -7,13 +7,13 @@ export default function About() {
     <div className="about-container">
       <DefaultNavbar />
       <div className="about-header">
-        <h1 className="about-title">🌊 About Blue Carbon Platform</h1>
+        <h1 className="about-title">🌊 About CarbonLens Platform</h1>
         <p className="about-subtitle">Protecting coastal ecosystems through transparent carbon credit trading</p>
       </div>
 
       {/* Hero Section */}
       <div className="about-hero">
-        <div className="hero-content">
+        <div className="about-content">
           <h2>Revolutionizing Blue Carbon Conservation</h2>
           <p>Our platform connects coastal ecosystem protectors with carbon credit buyers, creating a transparent marketplace that drives real environmental impact while providing sustainable income for coastal communities.</p>
         </div>
