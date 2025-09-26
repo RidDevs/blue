@@ -84,9 +84,13 @@ export default function AdminHome() {
               <Link to="/project-verification" className="btn-hero-primary">
                 Review Projects
               </Link>
-              <Link to="/platform-analytics" className="btn-hero-secondary">
+
+               {/* 
+               <Link to="/platform-analytics" className="btn-hero-secondary">
                 View Analytics
-              </Link>
+              </Link>  
+              */}
+
             </div>
           </div>
         </div>
