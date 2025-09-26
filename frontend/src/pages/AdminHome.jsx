@@ -59,21 +59,37 @@ export default function AdminHome() {
   return (
     <div className="home-container">
       {/* Hero Section */}
-      <div className="hero-section hero-admin">
-        <div className="admin-admin">
-          <h1>Welcome to the Admin Site.</h1>
-        </div>
-        <div className="hero-content">
-          <div className="hero-actions">
-            <Link to="/project-verification" className="btn-hero-primary">
-              Review Projects
-            </Link>
-            <Link to="/platform-analytics" className="btn-hero-secondary">
-              View Analytics
-            </Link>
+      <div
+          className="hero-section hero-admin"
+          style={{
+            height: "50vh",
+            minHeight: "50vh",
+            maxHeight: "50vh",
+            backgroundImage: 'url("./src/assets/admin.png")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <div className="admin-admin">
+            <h1>Welcome to the Admin Site.</h1>
+          </div>
+          <div className="hero-content">
+            <div className="hero-actions">
+              <Link to="/project-verification" className="btn-hero-primary">
+                Review Projects
+              </Link>
+              <Link to="/platform-analytics" className="btn-hero-secondary">
+                View Analytics
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Dashboard Cards */}
       <div className="dashboard-grid">
