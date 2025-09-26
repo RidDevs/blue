@@ -5,7 +5,7 @@ export default function FarmerHome() {
   return (
     <div className="home-container">
       <div className="hero-section hero-farmer">
-        <div className="hero-background"></div>
+        <div className="hero-background"><img src="./src/assets/farmer.jpg" alt="farmer.jpg" /></div>
         <div className="hero-content">
           <div className="hero-badge">🌾 Farmer Portal</div>
           <h1 className="hero-title">Protecting Blue Carbon Ecosystems</h1>
