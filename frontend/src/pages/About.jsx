@@ -14,7 +14,7 @@ export default function About() {
       {/* Hero Section */}
       <div className="about-hero">
         <div className="about-content">
-          <h2>Revolutionizing Blue Carbon Conservation</h2>
+          <h4>Revolutionizing Blue Carbon Conservation</h4>
           <p>Our platform connects coastal ecosystem protectors with carbon credit buyers, creating a transparent marketplace that drives real environmental impact while providing sustainable income for coastal communities.</p>
         </div>
       </div>
