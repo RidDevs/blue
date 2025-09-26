@@ -63,7 +63,7 @@ export default function AdminHome() {
           className="hero-section hero-admin"
           style={{
             height: "50vh",
-            minHeight: "75vh",
+            minHeight: "50vh",
             maxHeight: "50vh",
             backgroundImage: 'url("../public/admin.png")',
             backgroundSize: "cover",
