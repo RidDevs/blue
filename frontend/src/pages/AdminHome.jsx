@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import "../index.css";
+import adminImg from '../assets/admin.png';
+
 
 export default function AdminHome() {
   const [stats, setStats] = useState({
@@ -65,7 +67,7 @@ export default function AdminHome() {
             height: "50vh",
             minHeight: "50vh",
             maxHeight: "50vh",
-            backgroundImage: 'url("../public/admin.png")',
+            backgroundImage: `url(${adminImg})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
