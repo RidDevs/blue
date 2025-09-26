@@ -4,7 +4,7 @@ import { db } from "../firebase";
 import * as deeplab from "@tensorflow-models/deeplab";
 import "@tensorflow/tfjs";
 import "../index.css";
-import { contractWithSigner } from "./blockchain";
+
 
 
 export default function ProjectVerification() {
