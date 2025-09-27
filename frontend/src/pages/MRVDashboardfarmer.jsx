@@ -5,7 +5,13 @@ import "../index.css";
 import { db, auth } from "../firebase"; // your firebase config
 import { collection, query, where, getDocs } from "firebase/firestore";
 
+import { ethers } from "ethers";
+import { getContractWithSigner } from "../blockchain/contractWithSigner";
+
+
+
 export default function MRVDashboard() {
+  const [onChainCredits, setOnChainCredits] = useState({});
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
   const [mrvData, setMrvData] = useState({
@@ -20,28 +26,46 @@ export default function MRVDashboard() {
 
   // --- Fetch projects and credit data from Firestore ---
   useEffect(() => {
-    const fetchUserProjects = async () => {
-      try {
-        const user = auth.currentUser;
-        if (!user) return;
+  const fetchUserProjects = async () => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
 
-        const projectsRef = collection(db, "projects");
-        const q = query(projectsRef, where("userId", "==", user.uid));
-        const querySnapshot = await getDocs(q);
+      const projectsRef = collection(db, "projects");
+      const q = query(projectsRef, where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
 
-        const userProjects = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
+      const userProjects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
-        setProjects(userProjects);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
+      setProjects(userProjects);
+
+      // 🔹 Fetch on-chain credits for each project
+      const contract = await getContractWithSigner();
+      const creditsData = {};
+
+      for (let project of userProjects) {
+        if (!project.numericId || !project.farmerWalletAddress) continue;
+        try {
+          const creditsBN = await contract.getCreditsByProject(project.farmerWalletAddress, project.numericId);
+          creditsData[project.id] = Number(ethers.utils.formatUnits(creditsBN, 0));
+        } catch (err) {
+          console.error(`Failed to fetch on-chain credits for project ${project.projectName}:`, err);
+        }
       }
-    };
 
-    fetchUserProjects();
-  }, []);
+      setOnChainCredits(creditsData);
+
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
+  fetchUserProjects();
+}, []);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -91,21 +115,28 @@ export default function MRVDashboard() {
   // --- Functions updated to use Firestore data ---
 
   // Calculate total credits from fetched projects
-  const getTotalCarbonCredits = () => {
-    return projects.reduce((total, project) => total + (project.creditsGenerated || 0), 0);
-  };
+ const getTotalCarbonCredits = () => {
+  return projects.reduce((total, project) => {
+    const firestoreCredits = project.creditsGenerated || 0;
+    const blockchainCredits = onChainCredits[project.id] || 0;
+    return total + blockchainCredits;
+  }, 0);
+};
+
 
   // Get credits by project from fetched projects
   const getCarbonCreditsByProject = () => {
-    const creditsByProject = {};
-    projects.forEach(project => {
-      if (project.creditsGenerated) {
-        creditsByProject[project.projectName] = project.creditsGenerated;
-      }
-    });
-    return creditsByProject;
-  };
-  
+  const creditsByProject = {};
+  projects.forEach(project => {
+    const firestoreCredits = project.creditsGenerated || 0;
+    const blockchainCredits = onChainCredits[project.id] || 0;
+    if (firestoreCredits + blockchainCredits > 0) {
+      creditsByProject[project.projectName] = blockchainCredits;
+    }
+  });
+  return creditsByProject;
+};
+
   // Get project status summary
   const getProjectStatusSummary = () => {
     // This is the ideal place to combine Firestore project data with localStorage MRV reports
@@ -159,7 +190,7 @@ export default function MRVDashboard() {
                 {Object.entries(getCarbonCreditsByProject()).map(([projectName, credits]) => (
                   <div key={projectName} className="project-credits">
                     <span className="project-name">{projectName}</span>
-                    <span className="credits-amount">{credits.toFixed(2)} tCO2</span>
+                    <span className="credits-amount">{credits.toFixed(3)} tCO2</span>
                   </div>
                 ))}
                 {Object.keys(getCarbonCreditsByProject()).length === 0 && (
@@ -170,7 +201,7 @@ export default function MRVDashboard() {
           </div>
 
           {/* Carbon Credit Price Graph */}
-          <div className="mrv-section price-graph-section">
+          {/* <div className="mrv-section price-graph-section">
             <h3>📈 Carbon Credit Price Trends</h3>
             <div className="price-graph">
               <div className="current-price">
@@ -191,7 +222,7 @@ export default function MRVDashboard() {
                 ))}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* My Projects Status */}
@@ -231,7 +262,7 @@ export default function MRVDashboard() {
                   {project.creditsGenerated > 0 && (
                     <div className="stat">
                       <span className="stat-label">Blockchain Tx</span>
-                      <span className="stat-value tx-id">{project.blockchainTx.substring(0, 10)}...</span>
+                      <span className="stat-value tx-id">{project.blockchainTx}</span>
                     </div>
                   )}
                 </div>
