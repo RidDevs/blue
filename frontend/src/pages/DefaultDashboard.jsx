@@ -79,7 +79,7 @@ export default function DefaultDashboard() {
               <div className="price-info">
                 <div className="price-item">
                   <span className="price-label">Current Price</span>
-                  <span className="price-value">$15.50/Credit</span>
+                  <span className="price-value"> ₹15.50/Credit</span>
                 </div>
                 <div className="price-item">
                   <span className="price-label">24h Change</span>

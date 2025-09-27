@@ -112,7 +112,7 @@ export default function MRVDashboardBuyer() {
     setPurchaseHistory(existingPurchases);
     loadAvailableCredits(); // Refresh available credits
     
-    alert(`Successfully purchased ${amount} tCO2 credits for $${purchase.totalCost.toFixed(2)}`);
+    alert(`Successfully purchased ${amount} tCO2 credits for  ₹${purchase.totalCost.toFixed(2)}`);
   };
 
   const getTotalPurchasedCredits = () => {
@@ -196,7 +196,7 @@ export default function MRVDashboardBuyer() {
             <div className="price-graph">
               <div className="current-price">
                 <span className="price-label">Current Price</span>
-                <span className="price-value">$58.00 per tCO2</span>
+                <span className="price-value">₹58.00 per tCO2</span>
                 <span className="price-change positive">+5.5% ↗</span>
               </div>
               <div className="price-chart">
@@ -207,7 +207,7 @@ export default function MRVDashboardBuyer() {
                       style={{ height: `${(data.price / 60) * 100}%` }}
                     ></div>
                     <span className="month-label">{data.month}</span>
-                    <span className="price-label">${data.price}</span>
+                    <span className="price-label">₹{data.price}</span>
                   </div>
                 ))}
               </div>
@@ -229,7 +229,7 @@ export default function MRVDashboardBuyer() {
             <div className="market-stat-card">
               <div className="stat-icon">💵</div>
               <div className="stat-content">
-                <span className="stat-value">${getMarketStats().averagePrice.toFixed(2)}</span>
+                <span className="stat-value">₹{getMarketStats().averagePrice.toFixed(2)}</span>
                 <span className="stat-label">Average Price per tCO2</span>
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function MRVDashboardBuyer() {
             <div className="market-stat-card">
               <div className="stat-icon">💰</div>
               <div className="stat-content">
-                <span className="stat-value">${getMarketStats().marketValue.toFixed(0)}</span>
+                <span className="stat-value">₹{getMarketStats().marketValue.toFixed(0)}</span>
                 <span className="stat-label">Total Market Value</span>
               </div>
             </div>
@@ -264,8 +264,8 @@ export default function MRVDashboardBuyer() {
                   <div className="credit-details">
                     <p><strong>Location:</strong> {credit.location}</p>
                     <p><strong>Available Credits:</strong> {credit.availableCredits.toFixed(2)} tCO2</p>
-                    <p><strong>Price per Credit:</strong> ${credit.pricePerCredit}</p>
-                    <p><strong>Total Value:</strong> ${(credit.availableCredits * credit.pricePerCredit).toFixed(2)}</p>
+                    <p><strong>Price per Credit:</strong> ₹{credit.pricePerCredit}</p>
+                    <p><strong>Total Value:</strong>₹{(credit.availableCredits * credit.pricePerCredit).toFixed(2)}</p>
                   </div>
                   <div className="purchase-section">
                     <input

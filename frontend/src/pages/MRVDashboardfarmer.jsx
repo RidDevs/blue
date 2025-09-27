@@ -175,7 +175,7 @@ export default function MRVDashboard() {
             <div className="price-graph">
               <div className="current-price">
                 <span className="price-label">Current Price</span>
-                <span className="price-value">$58.00 per tCO2</span>
+                <span className="price-value">₹58.00 per tCO2</span>
                 <span className="price-change positive">+5.5% ↗</span>
               </div>
               <div className="price-chart">
@@ -186,7 +186,7 @@ export default function MRVDashboard() {
                       style={{ height: `${(data.price / 60) * 100}%` }}
                     ></div>
                     <span className="month-label">{data.month}</span>
-                    <span className="price-label">${data.price}</span>
+                    <span className="price-label">₹{data.price}</span>
                   </div>
                 ))}
               </div>

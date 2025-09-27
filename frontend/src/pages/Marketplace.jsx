@@ -267,7 +267,7 @@ export default function Marketplace() {
             </div>
             <div className="stat-card">
               <div className="stat-number">
-                ${marketListings.length > 0 ? 
+                ₹{marketListings.length > 0 ? 
                   (marketListings.reduce((sum, listing) => sum + parseFloat(listing.pricePerCredit || 0), 0) / marketListings.length).toFixed(2) 
                   : '0.00'}
               </div>
