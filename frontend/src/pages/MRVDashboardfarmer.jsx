@@ -156,16 +156,17 @@ export default function MRVDashboard() {
   };
 
   // Mock carbon credit price data (unchanged)
-  const getCarbonCreditPriceData = () => {
-    return [
-      { month: 'Jan', price: 45 },
-      { month: 'Feb', price: 48 },
-      { month: 'Mar', price: 52 },
-      { month: 'Apr', price: 49 },
-      { month: 'May', price: 55 },
-      { month: 'Jun', price: 58 },
-    ];
-  };
+
+  // const getCarbonCreditPriceData = () => {
+  //   return [
+  //     { month: 'Jan', price: 45 },
+  //     { month: 'Feb', price: 48 },
+  //     { month: 'Mar', price: 52 },
+  //     { month: 'Apr', price: 49 },
+  //     { month: 'May', price: 55 },
+  //     { month: 'Jun', price: 58 },
+  //   ];
+  // };
 
   return (
     <div className="page-container">
@@ -261,8 +262,21 @@ export default function MRVDashboard() {
                   </div>
                   {project.creditsGenerated > 0 && (
                     <div className="stat">
-                      <span className="stat-label">Blockchain Tx</span>
-                      <span className="stat-value tx-id">{project.blockchainTx}</span>
+                      <span className="stat-label">Blockchain Tx Hash</span>
+                      <span className="stat-value tx-id">
+                      {project.blockchainTx ? (
+                        <a 
+                          href={`https://sepolia.etherscan.io/tx/${project.blockchainTx}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="tx-link"
+                        >
+                          {project.blockchainTx}
+                        </a>
+                      ) : (
+                        "N/A"
+                      )}
+                    </span>
                     </div>
                   )}
                 </div>

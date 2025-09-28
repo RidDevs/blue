@@ -6338,3 +6338,17 @@ padding: 0 px;
   margin-bottom: 20px;
   color: rgb(0, 0, 0);
 }
+
+/*this ones are for transaction links in farnmer dashborad*/
+
+.tx-link {
+  color: #007bff;         /* Bootstrap-like blue */
+  text-decoration: none;  /* No underline initially */
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.tx-link:hover {
+  text-decoration: underline; /* Underline on hover */
+  color: #0056b3;             /* Darker blue on hover */
+}
