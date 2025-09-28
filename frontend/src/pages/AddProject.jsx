@@ -99,6 +99,10 @@ export default function AddProject() {
         satImage: satImageUrl,
         userId: user.uid,
         status: "pending",
+        numericId: Date.now(), // ✅ add a numeric project ID for blockchain
+        creditsGenerated: 0,   // optional default
+        farmerWalletAddress: null, // optional default
+        farmerWalletPrivateKey: null, // optional default
         createdAt: serverTimestamp(),
       });
 
