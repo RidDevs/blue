@@ -4,12 +4,6 @@ import { db } from "../firebase";
 import * as deeplab from "@tensorflow-models/deeplab";
 import "@tensorflow/tfjs";
 import "../index.css";
-import { getContractWithSigner } from "../blockchain/contractWithSigner";
-import { ethers } from "ethers"; // needed for utils
-import { getDoc } from "firebase/firestore";
-import { createCustodialWallet } from "../blockchain/wallets"; // Step 2 code
-
-
 
 
 
@@ -95,88 +89,48 @@ export default function ProjectVerification() {
   };
 
   // --- Generate Credits ---
-const handleGenerateCredits = async () => {
-  if (!selectedProject || selectedProject.status !== "verified") {
-    alert("Credits can only be generated for a verified project.");
-    return;
-  }
+  const handleGenerateCredits = async () => {
+    if (!selectedProject || selectedProject.status !== "verified") {
+      alert("Credits can only be generated for a verified project.");
+      return;
+    }
 
-  const credits = parseFloat(creditsToGenerate);
-  if (isNaN(credits) || credits <= 0) {
-    alert("Please enter a valid number of credits to generate.");
-    return;
-  }
+    const credits = parseFloat(creditsToGenerate);
+    if (isNaN(credits) || credits <= 0) {
+      alert("Please enter a valid number of credits to generate.");
+      return;
+    }
 
-  try {
     const projectRef = doc(db, "projects", selectedProject.id);
-    const projectSnap = await getDoc(projectRef);
+    try {
+      console.log(`Simulating blockchain transaction for ${credits} credits...`);
+      const txId = `tx_${new Date().getTime()}`;
 
-    // 🔹 Get or create farmer's custodial wallet
-    let farmerWallet = projectSnap.data().farmerWalletAddress;
-    if (!farmerWallet) {
-      const wallet = createCustodialWallet();
-      farmerWallet = wallet.address;
       await updateDoc(projectRef, {
-        farmerWalletAddress: wallet.address,
-        farmerWalletPrivateKey: wallet.encryptedPrivateKey,
+        creditsGenerated: (selectedProject.creditsGenerated || 0) + credits,
+        blockchainTx: txId,
       });
-      console.log(`Custodial wallet created for farmer: ${farmerWallet}`);
+
+      setProjects(prev =>
+        prev.map(p =>
+          p.id === selectedProject.id
+            ? { ...p, creditsGenerated: (p.creditsGenerated || 0) + credits, blockchainTx: txId }
+            : p
+        )
+      );
+      setSelectedProject(prev => ({
+        ...prev,
+        creditsGenerated: (prev.creditsGenerated || 0) + credits,
+        blockchainTx: txId,
+      }));
+
+      setCreditsToGenerate("");
+      alert(`${credits} carbon credits successfully generated!`);
+    } catch (err) {
+      console.error("Failed to generate credits:", err);
+      alert("Failed to generate credits. Check console for details.");
     }
-
-    // 🔹 Get contract instance
-    const contract = await getContractWithSigner();
-
-    // 🔹 Ensure numericProjectId exists
-    const numericProjectId = selectedProject.numericId;
-    if (typeof numericProjectId !== "number") {
-      throw new Error("Project must have a numericId in Firestore.");
-    }
-
-    // 🔹 Register project on-chain if not done yet
-    if (!selectedProject.onChain) {
-      console.log(`Registering project ${numericProjectId} on-chain...`);
-      const txAdd = await contract.addProject(numericProjectId);
-      await txAdd.wait();
-      await updateDoc(projectRef, { onChain: true });
-      console.log(`Project ${numericProjectId} registered on blockchain ✅`);
-    }
-
-    // 🔹 Convert credits to BigNumber
-    const creditsBN = ethers.BigNumber.from(Math.floor(credits).toString());
-
-    // 🔹 Generate credits on blockchain
-    const tx = await contract.generateCredits(farmerWallet, numericProjectId, creditsBN);
-    await tx.wait();
-
-    // 🔹 Update Firestore
-    await updateDoc(projectRef, {
-      creditsGenerated: (selectedProject.creditsGenerated || 0) + credits,
-      blockchainTx: tx.hash,
-    });
-
-    // 🔹 Update frontend state
-    setProjects(prev =>
-      prev.map(p =>
-        p.id === selectedProject.id
-          ? { ...p, creditsGenerated: (p.creditsGenerated || 0) + credits, onChain: true }
-          : p
-      )
-    );
-    setSelectedProject(prev => ({
-      ...prev,
-      creditsGenerated: (prev.creditsGenerated || 0) + credits,
-      onChain: true
-    }));
-
-    setCreditsToGenerate("");
-    alert(`${credits} carbon credits successfully generated on blockchain!`);
-  } catch (err) {
-    console.error("❌ Failed to generate credits:", err);
-    alert("Failed to generate credits. Check console for details.");
-  }
-};
-
-
+  };
 
   // --- Status Helpers ---
   const getStatusColor = (status) => {
