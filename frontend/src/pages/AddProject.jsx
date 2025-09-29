@@ -18,28 +18,37 @@ export default function AddProject() {
     coordinates: "",
     documents: null,
     capturedPhoto: null,
-    satImage: null
+    satImage: null,
   });
+
+  // 🔹 State for tooltip visibility
+  const [showMethodologyInfo, setShowMethodologyInfo] = useState(false);
+  const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProjectData(prev => ({
+    setProjectData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+
+    // If methodology is being changed, show its info
+    if (name === "methodology") {
+      setShowMethodologyInfo(value !== "");
+    }
   };
 
   const handleFileChange = (e) => {
     const files = e.target.files;
-    setProjectData(prev => ({
+    setProjectData((prev) => ({
       ...prev,
-      documents: files
+      documents: files,
     }));
   };
 
   // 🔹 Receive data from GreenVerifier
   const handleVerifierData = (data) => {
-    setProjectData(prev => ({
+    setProjectData((prev) => ({
       ...prev,
       coordinates: data.gpsCoords
         ? `${data.gpsCoords.lat}, ${data.gpsCoords.lon}`
@@ -67,7 +76,10 @@ export default function AddProject() {
       if (projectData.documents) {
         for (let i = 0; i < projectData.documents.length; i++) {
           const file = projectData.documents[i];
-          const storageRef = ref(storage, `projects/${user.uid}/${Date.now()}_${file.name}`);
+          const storageRef = ref(
+            storage,
+            `projects/${user.uid}/${Date.now()}_${file.name}`,
+          );
           await uploadBytes(storageRef, file);
           documentUrls.push(await getDownloadURL(storageRef));
         }
@@ -76,8 +88,13 @@ export default function AddProject() {
       // Upload captured photo
       let capturedPhotoUrl = null;
       if (projectData.capturedPhoto) {
-        const blob = await fetch(projectData.capturedPhoto).then(r => r.blob());
-        const storageRef = ref(storage, `projects/${user.uid}/photo_${Date.now()}.png`);
+        const blob = await fetch(projectData.capturedPhoto).then((r) =>
+          r.blob(),
+        );
+        const storageRef = ref(
+          storage,
+          `projects/${user.uid}/photo_${Date.now()}.png`,
+        );
         await uploadBytes(storageRef, blob);
         capturedPhotoUrl = await getDownloadURL(storageRef);
       }
@@ -85,8 +102,11 @@ export default function AddProject() {
       // Upload satellite image
       let satImageUrl = null;
       if (projectData.satImage) {
-        const blob = await fetch(projectData.satImage).then(r => r.blob());
-        const storageRef = ref(storage, `projects/${user.uid}/satellite_${Date.now()}.png`);
+        const blob = await fetch(projectData.satImage).then((r) => r.blob());
+        const storageRef = ref(
+          storage,
+          `projects/${user.uid}/satellite_${Date.now()}.png`,
+        );
         await uploadBytes(storageRef, blob);
         satImageUrl = await getDownloadURL(storageRef);
       }
@@ -115,20 +135,139 @@ export default function AddProject() {
         coordinates: "",
         documents: null,
         capturedPhoto: null,
-        satImage: null
+        satImage: null,
       });
-
+      setShowMethodologyInfo(false); // Hide tooltip after submission
+      setShowMethodologyPopup(false); // Hide popup after submission
     } catch (error) {
       console.error("Error adding project: ", error);
       alert("Failed to submit project. Check console for details.");
     }
   };
 
+  // 🔹 Methodology info content
+  const methodologyInfo = {
+    vcs: {
+      title: "Verified Carbon Standard (VCS)",
+      description:
+        "The world's most widely used voluntary carbon offset program. VCS ensures carbon projects are real, measurable, permanent, and additional. It's ideal for large-scale projects with rigorous verification.",
+      keyFeatures: [
+        "Most widely accepted standard globally",
+        "Requires third-party verification",
+        "Strong permanence requirements",
+        "Suitable for large projects",
+      ],
+    },
+    "gold-standard": {
+      title: "Gold Standard",
+      description:
+        "A premium certification standard developed by WWF and other NGOs. It focuses on sustainable development benefits alongside carbon reduction, making it ideal for projects that benefit local communities.",
+      keyFeatures: [
+        "Emphasizes sustainable development",
+        "Requires community benefits",
+        "Highest environmental integrity",
+        "Premium market positioning",
+      ],
+    },
+    "plan-vivo": {
+      title: "Plan Vivo",
+      description:
+        "A community-based standard designed for smallholder farmers and local communities. It's particularly suitable for agroforestry and land management projects that involve rural communities.",
+      keyFeatures: [
+        "Community-focused approach",
+        "Designed for smallholders",
+        "Supports rural livelihoods",
+        "Flexible verification methods",
+      ],
+    },
+    "climate-action": {
+      title: "Climate Action Reserve",
+      description:
+        "A North American standard known for its rigorous protocols and conservative approach to carbon accounting. It's commonly used in the US and Canada with strong regulatory backing.",
+      keyFeatures: [
+        "North American focus",
+        "Conservative carbon accounting",
+        "Strong regulatory compliance",
+        "Detailed monitoring requirements",
+      ],
+    },
+  };
+
+  // 🔹 Render methodology info as a tooltip that appears next to the dropdown
+  const renderMethodologyInfo = () => {
+    if (!showMethodologyInfo || !projectData.methodology) return null;
+
+    const info = methodologyInfo[projectData.methodology];
+    if (!info) return null;
+
+    return (
+      <div className="methodology-tooltip">
+        <div className="tooltip-content">
+          <h4>{info.title}</h4>
+          <p>{info.description}</p>
+          <h5>Key Features:</h5>
+          <ul>
+            {info.keyFeatures.map((feature, index) => (
+              <li key={index}>• {feature}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  };
+
+  // 🔹 Render methodology popup
+  const renderMethodologyPopup = () => {
+    if (!showMethodologyPopup) return null;
+
+    return (
+      <div
+        className="methodology-popup-overlay"
+        onClick={() => setShowMethodologyPopup(false)}
+      >
+        <div className="methodology-popup" onClick={(e) => e.stopPropagation()}>
+          <div className="popup-header">
+            <h3>What is Methodology?</h3>
+            <button
+              className="close-button"
+              onClick={() => setShowMethodologyPopup(false)}
+            >
+              ×
+            </button>
+          </div>
+          <div className="popup-content">
+            <p>
+              A methodology is a standardized framework or set of rules used to
+              measure, monitor, and verify carbon sequestration projects. It
+              ensures that carbon credits are real, measurable, permanent, and
+              additional.
+            </p>
+            <p>
+              Different methodologies are suited for different types of projects
+              and regions, and choosing the right one is crucial for successful
+              carbon credit generation.
+            </p>
+          </div>
+          <div className="popup-footer">
+            <button
+              className="btn-primary"
+              onClick={() => setShowMethodologyPopup(false)}
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="page-container">
       <div className="page-header">
         <h1 className="page-title">🌱 Add New Project</h1>
-        <p className="page-subtitle">Submit your blue carbon project for verification and credit generation</p>
+        <p className="page-subtitle">
+          Submit your blue carbon project for verification and credit generation
+        </p>
       </div>
 
       <form className="project-form" onSubmit={handleSubmit}>
@@ -156,12 +295,96 @@ export default function AddProject() {
                 onChange={handleInputChange}
                 required
               >
-                <option value="">Select project type</option>
-                <option value="mangrove">Mangrove Restoration</option>
-                <option value="seagrass">Seagrass Conservation</option>
-                <option value="saltmarsh">Salt Marsh Restoration</option>
-                <option value="oyster">Oyster Reef Restoration</option>
-                <option value="kelp">Kelp Forest Conservation</option>
+                <option value="">Select blue carbon project type</option>
+                {/* Mangrove Ecosystems */}
+                <optgroup label="Mangrove Ecosystems">
+                  <option value="mangrove-restoration">
+                    Mangrove Restoration
+                  </option>
+                  <option value="mangrove-reforestation">
+                    Mangrove Reforestation
+                  </option>
+                  <option value="mangrove-conservation">
+                    Mangrove Conservation
+                  </option>
+                  <option value="mangrove-fire-prevention">
+                    Mangrove Fire Prevention
+                  </option>
+                  <option value="mangrove-agroforestry">
+                    Mangrove Agroforestry
+                  </option>
+                </optgroup>
+
+                {/* Seagrass Ecosystems */}
+                <optgroup label="Seagrass Ecosystems">
+                  <option value="seagrass-restoration">
+                    Seagrass Bed Restoration
+                  </option>
+                  <option value="seagrass-conservation">
+                    Seagrass Conservation
+                  </option>
+                  <option value="seagrass-transplantation">
+                    Seagrass Transplantation
+                  </option>
+                  <option value="seagrass-disease-management">
+                    Seagrass Disease Management
+                  </option>
+                </optgroup>
+
+                {/* Salt Marsh & Wetlands */}
+                <optgroup label="Salt Marsh & Wetlands">
+                  <option value="salt-marsh-restoration">
+                    Salt Marsh Restoration
+                  </option>
+                  <option value="coastal-wetland-restoration">
+                    Coastal Wetland Restoration
+                  </option>
+                  <option value="tidal-wetland-conservation">
+                    Tidal Wetland Conservation
+                  </option>
+                  <option value="brackish-marsh-creation">
+                    Brackish Marsh Creation
+                  </option>
+                </optgroup>
+
+                {/* Kelp & Macroalgae */}
+                <optgroup label="Kelp & Macroalgae">
+                  <option value="kelp-forest-restoration">
+                    Kelp Forest Restoration
+                  </option>
+                  <option value="macroalgae-cultivation">
+                    Macroalgae Cultivation
+                  </option>
+                  <option value="kelp-disease-prevention">
+                    Kelp Disease Prevention
+                  </option>
+                </optgroup>
+
+                {/* Oyster & Shellfish */}
+                <optgroup label="Oyster & Shellfish Reefs">
+                  <option value="oyster-reef-restoration">
+                    Oyster Reef Restoration
+                  </option>
+                  <option value="shellfish-reef-conservation">
+                    Shellfish Reef Conservation
+                  </option>
+                  <option value="crab-habitat-restoration">
+                    Crab Habitat Restoration
+                  </option>
+                </optgroup>
+
+                {/* Coastal Protection */}
+                <optgroup label="Coastal Protection">
+                  <option value="coastal-dune-restoration">
+                    Coastal Dune Restoration
+                  </option>
+                  <option value="ecosystem-connectivity">
+                    Ecosystem Connectivity
+                  </option>
+                  <option value="integrated-coastal-management">
+                    Integrated Coastal Management
+                  </option>
+                </optgroup>
               </select>
             </div>
           </div>
@@ -254,19 +477,43 @@ export default function AddProject() {
 
           <div className="form-group">
             <label htmlFor="methodology">Methodology *</label>
-            <select
-              id="methodology"
-              name="methodology"
-              value={projectData.methodology}
-              onChange={handleInputChange}
-              required
+            <div
+              className="methodology-container"
+              onMouseEnter={() => setShowMethodologyInfo(true)}
+              onMouseLeave={() => setShowMethodologyInfo(false)}
             >
-              <option value="">Select methodology</option>
-              <option value="vcs">Verified Carbon Standard (VCS)</option>
-              <option value="gold-standard">Gold Standard</option>
-              <option value="plan-vivo">Plan Vivo</option>
-              <option value="climate-action">Climate Action Reserve</option>
-            </select>
+              <select
+                id="methodology"
+                name="methodology"
+                value={projectData.methodology}
+                onChange={handleInputChange}
+                required
+                onFocus={() => setShowMethodologyInfo(true)}
+                onBlur={() => {
+                  if (!projectData.methodology) {
+                    setShowMethodologyInfo(false);
+                  }
+                }}
+              >
+                <option value="">Select methodology</option>
+                <option value="vcs">Verified Carbon Standard (VCS)</option>
+                <option value="gold-standard">Gold Standard</option>
+                <option value="plan-vivo">Plan Vivo</option>
+                <option value="climate-action">Climate Action Reserve</option>
+              </select>
+
+              {/* 🔹 Info icon button next to the label */}
+              <button
+                type="button"
+                className="info-icon-button"
+                onClick={() => setShowMethodologyPopup(true)}
+              >
+                i
+              </button>
+
+              {/* 🔹 Render methodology info as a tooltip next to the dropdown */}
+              {renderMethodologyInfo()}
+            </div>
           </div>
         </div>
 
@@ -283,7 +530,9 @@ export default function AddProject() {
               onChange={handleFileChange}
               className="file-input"
             />
-            <small className="form-help">Upload project plans, environmental assessments, permits, etc.</small>
+            <small className="form-help">
+              Upload project plans, environmental assessments, permits, etc.
+            </small>
           </div>
         </div>
 
@@ -293,9 +542,14 @@ export default function AddProject() {
         </div>
 
         <div className="form-section">
-          <button type="submit" className="submit-button">Submit Project</button>
+          <button type="submit" className="submit-button">
+            Submit Project
+          </button>
         </div>
       </form>
+
+      {/* 🔹 Render methodology popup */}
+      {renderMethodologyPopup()}
     </div>
   );
 }

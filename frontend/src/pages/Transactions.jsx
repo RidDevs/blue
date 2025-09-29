@@ -1,135 +1,302 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import blockchainService from "../blockchain/blockchain";
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [dateRange, setDateRange] = useState('all');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [dateRange, setDateRange] = useState("all");
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [userAddress, setUserAddress] = useState("");
 
-  // Mock data - replace with actual API calls
+  // Initialize blockchain and load transactions
   useEffect(() => {
+    initializeBlockchain();
+  }, []);
+
+  const initializeBlockchain = async () => {
+    try {
+      const address = await blockchainService.connectWallet();
+      setUserAddress(address);
+      setWalletConnected(true);
+      await loadBlockchainTransactions(address);
+    } catch (error) {
+      console.error("Blockchain connection failed:", error);
+      // Load mock data as fallback
+      loadMockTransactions();
+    }
+  };
+
+  const loadBlockchainTransactions = async (address) => {
+    setLoading(true);
+    try {
+      const blockchainTxs =
+        await blockchainService.getTransactionHistory(address);
+
+      // Load mock data to supplement blockchain transactions
+      const mockTransactions = [
+        {
+          id: "TXN-001",
+          type: "credit_purchase",
+          buyer: "James Chen",
+          seller: "Dr. Marina Santos",
+          project: "Mangrove Restoration - Sundarbans",
+          amount: 500,
+          pricePerTon: 25.5,
+          totalAmount: 12750.0,
+          currency: "USD",
+          status: "completed",
+          date: "2024-01-20",
+          timestamp: "2024-01-20T14:30:00Z",
+          paymentMethod: "Bank Transfer",
+          transactionHash:
+            "0x742d35cc6cd8f9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4",
+          blockchainNetwork: "Ethereum",
+          verificationStatus: "verified",
+          notes: "Carbon credit purchase for corporate sustainability goals",
+        },
+        {
+          id: "TXN-002",
+          type: "credit_sale",
+          buyer: "Lisa Thompson",
+          seller: "Sarah Williams",
+          project: "Coral Reef Protection Initiative",
+          amount: 300,
+          pricePerTon: 28.75,
+          totalAmount: 8625.0,
+          currency: "USD",
+          status: "pending",
+          date: "2024-01-19",
+          timestamp: "2024-01-19T16:45:00Z",
+          paymentMethod: "Credit Card",
+          transactionHash:
+            "0x923c45dd7de8f0a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5",
+          blockchainNetwork: "Ethereum",
+          verificationStatus: "pending",
+          notes: "Partial payment received, awaiting full confirmation",
+        },
+        {
+          id: "TXN-003",
+          type: "credit_purchase",
+          buyer: "Green Investment Corp",
+          seller: "Miguel Rodriguez",
+          project: "Blue Carbon Assessment",
+          amount: 800,
+          pricePerTon: 22.0,
+          totalAmount: 17600.0,
+          currency: "USD",
+          status: "completed",
+          date: "2024-01-18",
+          timestamp: "2024-01-18T11:20:00Z",
+          paymentMethod: "Wire Transfer",
+          transactionHash:
+            "0x456e78ff9ef0a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7",
+          blockchainNetwork: "Ethereum",
+          verificationStatus: "verified",
+          notes: "Bulk purchase for portfolio diversification",
+        },
+        {
+          id: "TXN-004",
+          type: "credit_sale",
+          buyer: "Eco Investment Partners",
+          seller: "Dr. Marina Santos",
+          project: "Mangrove Restoration - Sundarbans",
+          amount: 200,
+          pricePerTon: 26.25,
+          totalAmount: 5250.0,
+          currency: "USD",
+          status: "failed",
+          date: "2024-01-17",
+          timestamp: "2024-01-17T09:15:00Z",
+          paymentMethod: "Bank Transfer",
+          transactionHash: null,
+          blockchainNetwork: "Ethereum",
+          verificationStatus: "failed",
+          notes: "Transaction failed due to insufficient funds",
+        },
+        {
+          id: "TXN-005",
+          type: "credit_purchase",
+          buyer: "James Chen",
+          seller: "Sarah Williams",
+          project: "Coral Reef Protection Initiative",
+          amount: 150,
+          pricePerTon: 30.0,
+          totalAmount: 4500.0,
+          currency: "USD",
+          status: "processing",
+          date: "2024-01-16",
+          timestamp: "2024-01-16T13:45:00Z",
+          paymentMethod: "Cryptocurrency",
+          transactionHash:
+            "0x789f01aa0bf1a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8",
+          blockchainNetwork: "Ethereum",
+          verificationStatus: "processing",
+          notes: "Cryptocurrency payment in progress",
+        },
+        {
+          id: "TXN-006",
+          type: "platform_fee",
+          buyer: "Platform",
+          seller: "Dr. Marina Santos",
+          project: "Mangrove Restoration - Sundarbans",
+          amount: 0,
+          pricePerTon: 0,
+          totalAmount: 127.5,
+          currency: "USD",
+          status: "completed",
+          date: "2024-01-20",
+          timestamp: "2024-01-20T14:30:00Z",
+          paymentMethod: "Automatic",
+          transactionHash:
+            "0x123a45bb1cf2a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9",
+          blockchainNetwork: "Ethereum",
+          verificationStatus: "verified",
+          notes: "Platform fee (1% of transaction value)",
+        },
+      ];
+
+      // Combine blockchain and mock transactions
+      const allTransactions = [...blockchainTxs, ...mockTransactions];
+      setTransactions(allTransactions);
+      setFilteredTransactions(allTransactions);
+    } catch (error) {
+      console.error("Failed to load blockchain transactions:", error);
+      loadMockTransactions(); // Fallback to mock data
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMockTransactions = () => {
     const mockTransactions = [
       {
-        id: 'TXN-001',
-        type: 'credit_purchase',
-        buyer: 'James Chen',
-        seller: 'Dr. Marina Santos',
-        project: 'Mangrove Restoration - Sundarbans',
+        id: "TXN-001",
+        type: "credit_purchase",
+        buyer: "James Chen",
+        seller: "Dr. Marina Santos",
+        project: "Mangrove Restoration - Sundarbans",
         amount: 500,
-        pricePerTon: 25.50,
-        totalAmount: 12750.00,
-        currency: 'USD',
-        status: 'completed',
-        date: '2024-01-20',
-        timestamp: '2024-01-20T14:30:00Z',
-        paymentMethod: 'Bank Transfer',
-        transactionHash: '0x742d35cc6cd8f9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4',
-        blockchainNetwork: 'Ethereum',
-        verificationStatus: 'verified',
-        notes: 'Carbon credit purchase for corporate sustainability goals'
+        pricePerTon: 25.5,
+        totalAmount: 12750.0,
+        currency: "USD",
+        status: "completed",
+        date: "2024-01-20",
+        timestamp: "2024-01-20T14:30:00Z",
+        paymentMethod: "Bank Transfer",
+        transactionHash:
+          "0x742d35cc6cd8f9a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4",
+        blockchainNetwork: "Ethereum",
+        verificationStatus: "verified",
+        notes: "Carbon credit purchase for corporate sustainability goals",
       },
       {
-        id: 'TXN-002',
-        type: 'credit_sale',
-        buyer: 'Lisa Thompson',
-        seller: 'Sarah Williams',
-        project: 'Coral Reef Protection Initiative',
+        id: "TXN-002",
+        type: "credit_sale",
+        buyer: "Lisa Thompson",
+        seller: "Sarah Williams",
+        project: "Coral Reef Protection Initiative",
         amount: 300,
         pricePerTon: 28.75,
-        totalAmount: 8625.00,
-        currency: 'USD',
-        status: 'pending',
-        date: '2024-01-19',
-        timestamp: '2024-01-19T16:45:00Z',
-        paymentMethod: 'Credit Card',
-        transactionHash: '0x923c45dd7de8f0a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5',
-        blockchainNetwork: 'Ethereum',
-        verificationStatus: 'pending',
-        notes: 'Partial payment received, awaiting full confirmation'
+        totalAmount: 8625.0,
+        currency: "USD",
+        status: "pending",
+        date: "2024-01-19",
+        timestamp: "2024-01-19T16:45:00Z",
+        paymentMethod: "Credit Card",
+        transactionHash:
+          "0x923c45dd7de8f0a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5",
+        blockchainNetwork: "Ethereum",
+        verificationStatus: "pending",
+        notes: "Partial payment received, awaiting full confirmation",
       },
       {
-        id: 'TXN-003',
-        type: 'credit_purchase',
-        buyer: 'Green Investment Corp',
-        seller: 'Miguel Rodriguez',
-        project: 'Blue Carbon Assessment',
+        id: "TXN-003",
+        type: "credit_purchase",
+        buyer: "Green Investment Corp",
+        seller: "Miguel Rodriguez",
+        project: "Blue Carbon Assessment",
         amount: 800,
-        pricePerTon: 22.00,
-        totalAmount: 17600.00,
-        currency: 'USD',
-        status: 'completed',
-        date: '2024-01-18',
-        timestamp: '2024-01-18T11:20:00Z',
-        paymentMethod: 'Wire Transfer',
-        transactionHash: '0x456e78ff9ef0a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7',
-        blockchainNetwork: 'Ethereum',
-        verificationStatus: 'verified',
-        notes: 'Bulk purchase for portfolio diversification'
+        pricePerTon: 22.0,
+        totalAmount: 17600.0,
+        currency: "USD",
+        status: "completed",
+        date: "2024-01-18",
+        timestamp: "2024-01-18T11:20:00Z",
+        paymentMethod: "Wire Transfer",
+        transactionHash:
+          "0x456e78ff9ef0a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7",
+        blockchainNetwork: "Ethereum",
+        verificationStatus: "verified",
+        notes: "Bulk purchase for portfolio diversification",
       },
       {
-        id: 'TXN-004',
-        type: 'credit_sale',
-        buyer: 'Eco Investment Partners',
-        seller: 'Dr. Marina Santos',
-        project: 'Mangrove Restoration - Sundarbans',
+        id: "TXN-004",
+        type: "credit_sale",
+        buyer: "Eco Investment Partners",
+        seller: "Dr. Marina Santos",
+        project: "Mangrove Restoration - Sundarbans",
         amount: 200,
         pricePerTon: 26.25,
-        totalAmount: 5250.00,
-        currency: 'USD',
-        status: 'failed',
-        date: '2024-01-17',
-        timestamp: '2024-01-17T09:15:00Z',
-        paymentMethod: 'Bank Transfer',
+        totalAmount: 5250.0,
+        currency: "USD",
+        status: "failed",
+        date: "2024-01-17",
+        timestamp: "2024-01-17T09:15:00Z",
+        paymentMethod: "Bank Transfer",
         transactionHash: null,
-        blockchainNetwork: 'Ethereum',
-        verificationStatus: 'failed',
-        notes: 'Transaction failed due to insufficient funds'
+        blockchainNetwork: "Ethereum",
+        verificationStatus: "failed",
+        notes: "Transaction failed due to insufficient funds",
       },
       {
-        id: 'TXN-005',
-        type: 'credit_purchase',
-        buyer: 'James Chen',
-        seller: 'Sarah Williams',
-        project: 'Coral Reef Protection Initiative',
+        id: "TXN-005",
+        type: "credit_purchase",
+        buyer: "James Chen",
+        seller: "Sarah Williams",
+        project: "Coral Reef Protection Initiative",
         amount: 150,
-        pricePerTon: 30.00,
-        totalAmount: 4500.00,
-        currency: 'USD',
-        status: 'processing',
-        date: '2024-01-16',
-        timestamp: '2024-01-16T13:45:00Z',
-        paymentMethod: 'Cryptocurrency',
-        transactionHash: '0x789f01aa0bf1a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8',
-        blockchainNetwork: 'Ethereum',
-        verificationStatus: 'processing',
-        notes: 'Cryptocurrency payment in progress'
+        pricePerTon: 30.0,
+        totalAmount: 4500.0,
+        currency: "USD",
+        status: "processing",
+        date: "2024-01-16",
+        timestamp: "2024-01-16T13:45:00Z",
+        paymentMethod: "Cryptocurrency",
+        transactionHash:
+          "0x789f01aa0bf1a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8",
+        blockchainNetwork: "Ethereum",
+        verificationStatus: "processing",
+        notes: "Cryptocurrency payment in progress",
       },
       {
-        id: 'TXN-006',
-        type: 'platform_fee',
-        buyer: 'Platform',
-        seller: 'Dr. Marina Santos',
-        project: 'Mangrove Restoration - Sundarbans',
+        id: "TXN-006",
+        type: "platform_fee",
+        buyer: "Platform",
+        seller: "Dr. Marina Santos",
+        project: "Mangrove Restoration - Sundarbans",
         amount: 0,
         pricePerTon: 0,
-        totalAmount: 127.50,
-        currency: 'USD',
-        status: 'completed',
-        date: '2024-01-20',
-        timestamp: '2024-01-20T14:30:00Z',
-        paymentMethod: 'Automatic',
-        transactionHash: '0x123a45bb1cf2a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9',
-        blockchainNetwork: 'Ethereum',
-        verificationStatus: 'verified',
-        notes: 'Platform fee (1% of transaction value)'
-      }
+        totalAmount: 127.5,
+        currency: "USD",
+        status: "completed",
+        date: "2024-01-20",
+        timestamp: "2024-01-20T14:30:00Z",
+        paymentMethod: "Automatic",
+        transactionHash:
+          "0x123a45bb1cf2a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9",
+        blockchainNetwork: "Ethereum",
+        verificationStatus: "verified",
+        notes: "Platform fee (1% of transaction value)",
+      },
     ];
     setTransactions(mockTransactions);
     setFilteredTransactions(mockTransactions);
-  }, []);
+  };
 
   // Filter transactions based on search and filters
   useEffect(() => {
@@ -137,45 +304,46 @@ export default function Transactions() {
 
     // Search filter
     if (searchTerm) {
-      filtered = filtered.filter(txn => 
-        txn.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        txn.buyer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        txn.seller.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        txn.project.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (txn) =>
+          txn.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          txn.buyer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          txn.seller.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          txn.project.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
     // Type filter
-    if (filterType !== 'all') {
-      filtered = filtered.filter(txn => txn.type === filterType);
+    if (filterType !== "all") {
+      filtered = filtered.filter((txn) => txn.type === filterType);
     }
 
     // Status filter
-    if (filterStatus !== 'all') {
-      filtered = filtered.filter(txn => txn.status === filterStatus);
+    if (filterStatus !== "all") {
+      filtered = filtered.filter((txn) => txn.status === filterStatus);
     }
 
     // Date range filter
-    if (dateRange !== 'all') {
+    if (dateRange !== "all") {
       const now = new Date();
       const filterDate = new Date();
-      
+
       switch (dateRange) {
-        case 'today':
+        case "today":
           filterDate.setHours(0, 0, 0, 0);
           break;
-        case 'week':
+        case "week":
           filterDate.setDate(now.getDate() - 7);
           break;
-        case 'month':
+        case "month":
           filterDate.setMonth(now.getMonth() - 1);
           break;
-        case 'year':
+        case "year":
           filterDate.setFullYear(now.getFullYear() - 1);
           break;
       }
-      
-      filtered = filtered.filter(txn => new Date(txn.date) >= filterDate);
+
+      filtered = filtered.filter((txn) => new Date(txn.date) >= filterDate);
     }
 
     setFilteredTransactions(filtered);
@@ -183,78 +351,119 @@ export default function Transactions() {
 
   const getTypeColor = (type) => {
     switch (type) {
-      case 'credit_purchase':
-        return 'type-badge purchase';
-      case 'credit_sale':
-        return 'type-badge sale';
-      case 'platform_fee':
-        return 'type-badge fee';
+      case "credit_purchase":
+        return "type-badge purchase";
+      case "credit_sale":
+        return "type-badge sale";
+      case "platform_fee":
+        return "type-badge fee";
       default:
-        return 'type-badge default';
+        return "type-badge default";
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'completed':
-        return 'status-badge verified';
-      case 'pending':
-        return 'status-badge pending';
-      case 'processing':
-        return 'status-badge active';
-      case 'failed':
-        return 'status-badge rejected';
+      case "completed":
+        return "status-badge verified";
+      case "pending":
+        return "status-badge pending";
+      case "processing":
+        return "status-badge active";
+      case "failed":
+        return "status-badge rejected";
       default:
-        return 'status-badge no-reports';
+        return "status-badge no-reports";
     }
   };
 
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'credit_purchase':
-        return '🛒';
-      case 'credit_sale':
-        return '💰';
-      case 'platform_fee':
-        return '🏛️';
+      case "credit_purchase":
+        return "🛒";
+      case "credit_sale":
+        return "💰";
+      case "platform_fee":
+        return "🏛️";
       default:
-        return '📄';
+        return "📄";
     }
   };
 
   const formatCurrency = (amount, currency) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: currency,
     }).format(amount);
   };
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   const formatDateTime = (dateString) => {
-    return new Date(dateString).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const transactionStats = {
     total: filteredTransactions.length,
-    completed: filteredTransactions.filter(t => t.status === 'completed').length,
-    pending: filteredTransactions.filter(t => t.status === 'pending').length,
-    processing: filteredTransactions.filter(t => t.status === 'processing').length,
-    failed: filteredTransactions.filter(t => t.status === 'failed').length,
-    totalVolume: filteredTransactions.reduce((sum, t) => sum + t.totalAmount, 0),
-    totalCredits: filteredTransactions.reduce((sum, t) => sum + t.amount, 0)
+    completed: filteredTransactions.filter((t) => t.status === "completed")
+      .length,
+    pending: filteredTransactions.filter((t) => t.status === "pending").length,
+    processing: filteredTransactions.filter((t) => t.status === "processing")
+      .length,
+    failed: filteredTransactions.filter((t) => t.status === "failed").length,
+    totalVolume: filteredTransactions.reduce(
+      (sum, t) => sum + t.totalAmount,
+      0,
+    ),
+    totalCredits: filteredTransactions.reduce((sum, t) => sum + t.amount, 0),
+  };
+
+  const handleViewOnBlockchain = async (transactionHash) => {
+    if (!transactionHash) {
+      alert("Transaction hash not available");
+      return;
+    }
+
+    try {
+      const details =
+        await blockchainService.getBlockchainTransactionDetails(
+          transactionHash,
+        );
+      if (details) {
+        alert(
+          `Transaction Details:\nHash: ${details.hash}\nStatus: ${details.status}\nBlock: ${details.blockNumber}\nGas Used: ${details.gasUsed}`,
+        );
+      } else {
+        alert("Transaction details not found on blockchain");
+      }
+    } catch (error) {
+      console.error("Failed to get blockchain details:", error);
+      alert("Failed to get blockchain details: " + error.message);
+    }
+  };
+
+  const handleConnectWallet = async () => {
+    try {
+      const address = await blockchainService.connectWallet();
+      setUserAddress(address);
+      setWalletConnected(true);
+      await loadBlockchainTransactions(address);
+    } catch (error) {
+      console.error("Wallet connection failed:", error);
+      alert("Failed to connect wallet: " + error.message);
+    }
   };
 
   return (
@@ -264,6 +473,32 @@ export default function Transactions() {
         <p className="page-subtitle">
           Track all carbon credit transactions, payments, and financial records
         </p>
+      </div>
+
+      {/* Blockchain Connection Status */}
+      <div className="blockchain-connection-status">
+        <div className="status-card">
+          <div className="status-header">
+            <h4>🔗 Blockchain Connection</h4>
+            <span
+              className={`status-indicator ${walletConnected ? "connected" : "disconnected"}`}
+            >
+              {walletConnected ? "✓ Connected" : "✗ Disconnected"}
+            </span>
+          </div>
+          <div className="status-details">
+            <p>
+              {walletConnected
+                ? `Connected: ${userAddress.substring(0, 6)}...${userAddress.substring(userAddress.length - 4)}`
+                : "Connect your wallet to view blockchain transactions"}
+            </p>
+            {!walletConnected && (
+              <button className="btn-primary" onClick={handleConnectWallet}>
+                🔗 Connect Wallet
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Transaction Statistics */}
@@ -292,14 +527,18 @@ export default function Transactions() {
         <div className="stat-card">
           <div className="stat-icon">💰</div>
           <div className="stat-content">
-            <div className="stat-number">{formatCurrency(transactionStats.totalVolume, 'USD')}</div>
+            <div className="stat-number">
+              {formatCurrency(transactionStats.totalVolume, "USD")}
+            </div>
             <div className="stat-label">Total Volume</div>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-icon">🌱</div>
           <div className="stat-content">
-            <div className="stat-number">{transactionStats.totalCredits.toLocaleString()}</div>
+            <div className="stat-number">
+              {transactionStats.totalCredits.toLocaleString()}
+            </div>
             <div className="stat-label">Credits Traded (tons)</div>
           </div>
         </div>
@@ -307,10 +546,13 @@ export default function Transactions() {
           <div className="stat-icon">📈</div>
           <div className="stat-content">
             <div className="stat-number">
-              {transactionStats.total > 0 ? 
-                formatCurrency(transactionStats.totalVolume / transactionStats.totalCredits, 'USD') : 
-                '$0.00'
-              }
+              {transactionStats.total > 0
+                ? formatCurrency(
+                    transactionStats.totalVolume /
+                      transactionStats.totalCredits,
+                    "USD",
+                  )
+                : "$0.00"}
             </div>
             <div className="stat-label">Avg Price/Ton</div>
           </div>
@@ -360,9 +602,7 @@ export default function Transactions() {
             <option value="year">This Year</option>
           </select>
         </div>
-        <button className="btn-primary">
-          📊 Export Report
-        </button>
+        <button className="btn-primary">📊 Export Report</button>
       </div>
 
       {/* Transactions List */}
@@ -371,7 +611,7 @@ export default function Transactions() {
           <div className="list-header">
             <h3>💳 Transaction History ({filteredTransactions.length})</h3>
           </div>
-          
+
           <div className="transactions-table">
             <div className="table-header">
               <div className="col-id">ID</div>
@@ -385,20 +625,23 @@ export default function Transactions() {
               <div className="col-date">Date</div>
               <div className="col-actions">Actions</div>
             </div>
-            
+
             <div className="table-body">
-              {filteredTransactions.map(transaction => (
-                <div 
-                  key={transaction.id} 
-                  className={`table-row ${selectedTransaction?.id === transaction.id ? 'selected' : ''}`}
+              {filteredTransactions.map((transaction) => (
+                <div
+                  key={transaction.id}
+                  className={`table-row ${selectedTransaction?.id === transaction.id ? "selected" : ""}`}
                   onClick={() => setSelectedTransaction(transaction)}
                 >
                   <div className="col-id">
                     <span className="transaction-id">{transaction.id}</span>
                   </div>
                   <div className="col-type">
-                    <span className={`type-badge ${getTypeColor(transaction.type)}`}>
-                      {getTypeIcon(transaction.type)} {transaction.type.replace('_', ' ')}
+                    <span
+                      className={`type-badge ${getTypeColor(transaction.type)}`}
+                    >
+                      {getTypeIcon(transaction.type)}{" "}
+                      {transaction.type.replace("_", " ")}
                     </span>
                   </div>
                   <div className="col-parties">
@@ -411,24 +654,37 @@ export default function Transactions() {
                     <span className="project-name">{transaction.project}</span>
                   </div>
                   <div className="col-amount">
-                    <span className="amount">{transaction.amount.toLocaleString()} tons</span>
+                    <span className="amount">
+                      {transaction.amount.toLocaleString()} tons
+                    </span>
                   </div>
                   <div className="col-price">
-                    <span className="price">{formatCurrency(transaction.pricePerTon, transaction.currency)}</span>
+                    <span className="price">
+                      {formatCurrency(
+                        transaction.pricePerTon,
+                        transaction.currency,
+                      )}
+                    </span>
                   </div>
                   <div className="col-total">
-                    <span className="total">{formatCurrency(transaction.totalAmount, transaction.currency)}</span>
+                    <span className="total">
+                      {formatCurrency(
+                        transaction.totalAmount,
+                        transaction.currency,
+                      )}
+                    </span>
                   </div>
                   <div className="col-status">
                     <span className={getStatusColor(transaction.status)}>
-                      {transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1)}
+                      {transaction.status.charAt(0).toUpperCase() +
+                        transaction.status.slice(1)}
                     </span>
                   </div>
                   <div className="col-date">
                     <span className="date">{formatDate(transaction.date)}</span>
                   </div>
                   <div className="col-actions">
-                    <button 
+                    <button
                       className="btn-small"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -463,13 +719,17 @@ export default function Transactions() {
                   <div className="detail-item">
                     <label>Type:</label>
                     <span className={getTypeColor(selectedTransaction.type)}>
-                      {getTypeIcon(selectedTransaction.type)} {selectedTransaction.type.replace('_', ' ')}
+                      {getTypeIcon(selectedTransaction.type)}{" "}
+                      {selectedTransaction.type.replace("_", " ")}
                     </span>
                   </div>
                   <div className="detail-item">
                     <label>Status:</label>
-                    <span className={getStatusColor(selectedTransaction.status)}>
-                      {selectedTransaction.status.charAt(0).toUpperCase() + selectedTransaction.status.slice(1)}
+                    <span
+                      className={getStatusColor(selectedTransaction.status)}
+                    >
+                      {selectedTransaction.status.charAt(0).toUpperCase() +
+                        selectedTransaction.status.slice(1)}
                     </span>
                   </div>
                   <div className="detail-item">
@@ -500,15 +760,27 @@ export default function Transactions() {
                 <div className="financial-grid">
                   <div className="financial-item">
                     <label>Credits Amount:</label>
-                    <span className="amount">{selectedTransaction.amount.toLocaleString()} tons CO₂</span>
+                    <span className="amount">
+                      {selectedTransaction.amount.toLocaleString()} tons CO₂
+                    </span>
                   </div>
                   <div className="financial-item">
                     <label>Price per Ton:</label>
-                    <span className="price">{formatCurrency(selectedTransaction.pricePerTon, selectedTransaction.currency)}</span>
+                    <span className="price">
+                      {formatCurrency(
+                        selectedTransaction.pricePerTon,
+                        selectedTransaction.currency,
+                      )}
+                    </span>
                   </div>
                   <div className="financial-item">
                     <label>Total Amount:</label>
-                    <span className="total">{formatCurrency(selectedTransaction.totalAmount, selectedTransaction.currency)}</span>
+                    <span className="total">
+                      {formatCurrency(
+                        selectedTransaction.totalAmount,
+                        selectedTransaction.currency,
+                      )}
+                    </span>
                   </div>
                   <div className="financial-item">
                     <label>Currency:</label>
@@ -527,17 +799,39 @@ export default function Transactions() {
                   <div className="blockchain-item">
                     <label>Transaction Hash:</label>
                     <span className="hash">
-                      {selectedTransaction.transactionHash ? 
-                        `${selectedTransaction.transactionHash.substring(0, 20)}...` : 
-                        'Not available'
-                      }
+                      {selectedTransaction.transactionHash
+                        ? `${selectedTransaction.transactionHash.substring(0, 20)}...`
+                        : "Not available"}
                     </span>
                   </div>
                   <div className="blockchain-item">
                     <label>Verification Status:</label>
-                    <span className={getStatusColor(selectedTransaction.verificationStatus)}>
-                      {selectedTransaction.verificationStatus.charAt(0).toUpperCase() + selectedTransaction.verificationStatus.slice(1)}
+                    <span
+                      className={getStatusColor(
+                        selectedTransaction.verificationStatus,
+                      )}
+                    >
+                      {selectedTransaction.verificationStatus
+                        .charAt(0)
+                        .toUpperCase() +
+                        selectedTransaction.verificationStatus.slice(1)}
                     </span>
+                  </div>
+                  <div className="blockchain-item">
+                    <label>Blockchain Actions:</label>
+                    <div className="blockchain-actions">
+                      <button
+                        className="btn-secondary"
+                        onClick={() =>
+                          handleViewOnBlockchain(
+                            selectedTransaction.transactionHash,
+                          )
+                        }
+                        disabled={!selectedTransaction.transactionHash}
+                      >
+                        🔍 View on Blockchain
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -550,19 +844,19 @@ export default function Transactions() {
               </div>
 
               <div className="transaction-actions">
-                <button className="btn-primary">
-                  📧 Contact Parties
-                </button>
-                <button className="btn-secondary">
+                <button className="btn-primary">📧 Contact Parties</button>
+                <button
+                  className="btn-secondary"
+                  onClick={() =>
+                    handleViewOnBlockchain(selectedTransaction.transactionHash)
+                  }
+                  disabled={!selectedTransaction.transactionHash}
+                >
                   🔗 View on Blockchain
                 </button>
-                <button className="btn-secondary">
-                  📄 Download Receipt
-                </button>
-                {selectedTransaction.status === 'pending' && (
-                  <button className="btn-danger">
-                    ❌ Cancel Transaction
-                  </button>
+                <button className="btn-secondary">📄 Download Receipt</button>
+                {selectedTransaction.status === "pending" && (
+                  <button className="btn-danger">❌ Cancel Transaction</button>
                 )}
               </div>
             </div>
